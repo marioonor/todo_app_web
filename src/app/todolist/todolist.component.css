@@ -1,0 +1,37 @@
+.header-container {
+  margin: 20px;
+}
+
+.header-image {
+  height: 60px;
+  width: 60px;
+}
+
+.add-todo-btn {
+  width: 200px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.table-container {
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: solid 1px rgb(213, 213, 213);
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* Consider adding a background color to prevent text overlap during scroll if needed */
+  /* background-color: white; */
+}
+
+.action-buttons-cell {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}

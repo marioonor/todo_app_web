@@ -1,0 +1,86 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow p-4">
+        <h3 class="text-center mb-4">Login</h3>
+
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
+          <div>
+            <!-- Email Field -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                [(ngModel)]="credentials.username"
+                required
+                #usernameInput="ngModel"
+                [ngClass]="{
+                  'is-invalid': loginForm.submitted && usernameInput.invalid
+                }"
+              />
+              <!-- Add validation messages if needed -->
+              <div
+                *ngIf="loginForm.submitted && usernameInput.invalid"
+                class="invalid-feedback"
+              >
+                <div *ngIf="usernameInput.errors?.['required']">
+                  Username is required.
+                </div>
+              </div>
+            </div>
+            <!-- Password Field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                [(ngModel)]="credentials.password"
+                required
+                #passwordInput="ngModel"
+                [ngClass]="{
+                  'is-invalid': loginForm.submitted && passwordInput.invalid
+                }"
+              />
+              <div
+                *ngIf="loginForm.submitted && passwordInput.invalid"
+                class="invalid-feedback"
+              >
+                <div *ngIf="passwordInput.errors?.['required']">
+                  Password is required.
+                </div>
+              </div>
+            </div>
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-primary btn-block"
+                [disabled]="loginForm.invalid"
+              >
+                Log In
+              </button>
+            </div>
+
+            <!-- General Error Message -->
+            <div
+              *ngIf="errorMessage"
+              class="alert alert-danger mt-3"
+              role="alert"
+            >
+              {{ errorMessage }}
+            </div>
+          </div>
+        </form>
+        <!-- Optional: Link to Registration Page -->
+        <div class="text-center mt-3">
+          <p>Don't have an account? <a routerLink="/register">Sign up</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
