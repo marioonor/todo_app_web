@@ -5,48 +5,60 @@ import { Router } from "@angular/router";
     providedIn: 'root',
 })
 export class AuthenService {
-    private isLoggedIn = false;
+    private authTokenKey = 'authToken'; // Key for storing the token in localStorage
+    private currentUserToken: string | null = null;
+
     public logoutEvent: EventEmitter<void> = new EventEmitter<void>();
     redirectUrl: string | null = null;
 
     constructor(private router: Router) {
         if (typeof window !== 'undefined' && window.localStorage) {
-            const storedLoginStatus = localStorage.getItem('isLoggedIn');
-            this.isLoggedIn = storedLoginStatus === 'true';
+            this.currentUserToken = localStorage.getItem(this.authTokenKey);
         } else {
             if (isDevMode()) {
-                console.warn('Local Storage is not available');
+                console.warn('AuthenService: Local Storage is not available. Auth token will not persist across sessions.');
             }
         }
     }
 
-    Login() {
-        this.isLoggedIn = true;
+    Login(token: string): void {
+        if (!token) {
+            console.error('AuthenService: Login(token) called without a token.');
+            return;
+        }
+        this.currentUserToken = token;
         if (typeof window !== 'undefined' && window.localStorage) {
-            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem(this.authTokenKey, token);
+            if (isDevMode()) {
+                console.log('AuthenService: User token stored. User is now considered logged in.');
+            }
         } else {
             if (isDevMode()) {
-                console.warn('Local Storage is not available');
+                console.warn('AuthenService: Local Storage is not available. Token not persisted.');
             }
         }
     }
 
-    Logout() {
-        this.isLoggedIn = false;
+    Logout(): void {
+        const wasLoggedIn = this.isUserLoggedIn(); // Check before clearing
+        this.currentUserToken = null;
         if (typeof window !== 'undefined' && window.localStorage) {
-            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem(this.authTokenKey);
         } else {
             if (isDevMode()) {
-                console.warn('Local Storage is not available');
+                console.warn('AuthenService: Local Storage is not available. Token not removed from persistence.');
             }
         }
-        this.logoutEvent.emit(); 
-        this.router.navigate(['/login']).then(() => {
-            window.location.replace('/login');
-        });
+        if (isDevMode()) {
+            console.log('AuthenService: User logged out. Token removed.');
+        }
+        if (wasLoggedIn) {
+            this.logoutEvent.emit();
+        }
+        this.router.navigate(['/login']);
     }
 
     isUserLoggedIn(): boolean {
-        return this.isLoggedIn;
+        return !!this.currentUserToken;
     }
 }

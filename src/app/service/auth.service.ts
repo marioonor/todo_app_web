@@ -15,7 +15,10 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<UserResponse | null>;
   public currentUser: Observable<UserResponse | null>;
 
-  constructor(private http: HttpClient, private router: Router) { 
+  // Property to store the attempted URL
+  public redirectUrl: string | null = null;
+
+  constructor(private http: HttpClient, private router: Router) {
     const storedUser = localStorage.getItem(this.currentUserKey);
     this.currentUserSubject = new BehaviorSubject<UserResponse | null>(
       storedUser ? JSON.parse(storedUser) : null
@@ -38,15 +41,14 @@ export class AuthService {
       .pipe(
         tap((user) => {
           // Assuming the login response includes the UserResponse object
-          if (user && user.id) {
-            // Check if user data is valid
+          if (user && user.token) {
             localStorage.setItem(this.currentUserKey, JSON.stringify(user));
             this.currentUserSubject.next(user);
+            if (!user.id && environment.production === false) { 
+              console.warn('AuthService: Login successful and token received, but user.id is missing in the response. Full user details may not be available. Backend should ideally provide a complete UserResponse including user ID.', user);
+            }
           } else {
-            // Handle cases where login is successful but user data is not as expected
-            // Or if the backend returns a different structure for login success (e.g., just a token)
-            // you might need another call to fetch user details.
-            // For this example, we assume UserResponse is returned.
+            console.error('AuthService: Login response did not contain a user object or a token. User authentication state not updated.', user);
           }
         })
       );

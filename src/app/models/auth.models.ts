@@ -12,8 +12,9 @@ export interface UserResponse {
   email: string;
   firstName: string;
   lastName: string;
-
   token: string;
+  expiresAt?: number; // Optional, if your backend provides it
+  tokenType?: string;
   // Note: Avoid returning sensitive data like passwords, even hashed, if not needed by the client.
   // The current backend returns the full Users entity, so this matches.
 }

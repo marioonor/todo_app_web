@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms'; // Adjust path as needed
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthService } from '../service/auth.service';
+import { AuthService } from '../service/auth.service'; // For backend API calls
+import { AuthenService } from '../guards/AuthService';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,11 @@ export class LoginComponent {
   errorMessage: string | null = null;
   isLoading: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService, // Used for the actual HTTP login request
+    private authenService: AuthenService, // Used for client-side session token management and redirect logic
+    private router: Router
+  ) {}
 
   onSubmit(loginForm: NgForm): void {
     this.errorMessage = null;
@@ -37,13 +42,23 @@ export class LoginComponent {
     }
 
     this.authService.login(this.credentials).subscribe({
-      next: (user) => {
-        // AuthService.login() should ideally return UserResponse or similar
+      next: (user) => { 
         this.isLoading = false;
-        console.log('Login successful, user:', user);
+        console.log('Login successful (via AuthService), user details:', user);
 
-        // Navigate to the todo-list page
-        this.router.navigate(['/todo-list']); // Make sure '/todo-list' is a defined route
+        if (user && user.token) {
+          const redirectUrl = this.authService.redirectUrl || '/todo-list';
+          this.authService.redirectUrl = null; // Clear the redirect URL from AuthenService
+          this.router.navigate([redirectUrl]);
+        } else {
+          console.error('Login successful, but no token was found in the response from AuthService.');
+          this.errorMessage = 'Authentication failed: Token not provided by the server.';
+          
+          if (this.authenService.isUserLoggedIn()) {
+            this.authenService.Logout();
+          }
+        }
+
       },
       error: (error: HttpErrorResponse) => {
         // This is where your line 46 log comes from
