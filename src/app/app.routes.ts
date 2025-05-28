@@ -3,17 +3,17 @@ import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { TodolistComponent } from './todolist/todolist.component';
-import { AuthGuard } from './guards/auth.guard'; // Import AuthGuard
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
     path: 'todo-list',
     component: TodolistComponent,
-    canActivate: [AuthGuard] // Protect this route
+    canActivate: [AuthGuard] 
   },
   { path: '**', redirectTo: '/login' },
 ];

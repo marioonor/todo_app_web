@@ -5,7 +5,7 @@ import { Router } from "@angular/router";
     providedIn: 'root',
 })
 export class AuthenService {
-    private authTokenKey = 'authToken'; // Key for storing the token in localStorage
+    private authTokenKey = 'authToken'; 
     private currentUserToken: string | null = null;
 
     public logoutEvent: EventEmitter<void> = new EventEmitter<void>();
@@ -40,7 +40,7 @@ export class AuthenService {
     }
 
     Logout(): void {
-        const wasLoggedIn = this.isUserLoggedIn(); // Check before clearing
+        const wasLoggedIn = this.isUserLoggedIn(); 
         this.currentUserToken = null;
         if (typeof window !== 'undefined' && window.localStorage) {
             localStorage.removeItem(this.authTokenKey);

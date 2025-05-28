@@ -7,14 +7,12 @@ export interface RegistrationPayload {
 }
 
 export interface UserResponse {
-  id: number; // Or string, depending on your backend ID type
+  id: number; 
   username: string;
   email: string;
   firstName: string;
   lastName: string;
   token: string;
-  expiresAt?: number; // Optional, if your backend provides it
+  expiresAt?: number; 
   tokenType?: string;
-  // Note: Avoid returning sensitive data like passwords, even hashed, if not needed by the client.
-  // The current backend returns the full Users entity, so this matches.
 }

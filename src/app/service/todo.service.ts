@@ -27,7 +27,6 @@ export class TodoService {
     );
   }
 
-  // New method to update a todo
   updateTodo(id: number, todo: Todo): Observable<Todo> {
     return this.http.put<Todo>(`${this.todoApiUrl}/${id}`, todo).pipe(
       tap(updatedTodo => console.log('Updated todo:', updatedTodo)),
@@ -35,8 +34,7 @@ export class TodoService {
     );
   }
 
-  // New method to delete a todo
-  deleteTodo(id: number): Observable<void> { // Backend might return void or the deleted todo
+  deleteTodo(id: number): Observable<void> { 
     return this.http.delete<void>(`${this.todoApiUrl}/${id}`).pipe(
       tap(() => console.log(`Deleted todo with id=${id}`)),
       catchError(this.handleError)
@@ -46,11 +44,8 @@ export class TodoService {
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';
     if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      // Backend returned an unsuccessful response code
-      // The response body may contain clues as to what went wrong
       errorMessage = `Server returned code ${error.status}, error message is: ${error.message}`;
       if (error.error && typeof error.error === 'string') {
         errorMessage += ` - ${error.error}`;

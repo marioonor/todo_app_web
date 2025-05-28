@@ -6,7 +6,6 @@
 
         <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
           <div>
-            <!-- Email Field -->
             <div class="mb-3">
               <label for="username" class="form-label">Username</label>
               <input
@@ -21,7 +20,7 @@
                   'is-invalid': loginForm.submitted && usernameInput.invalid
                 }"
               />
-              <!-- Add validation messages if needed -->
+
               <div
                 *ngIf="loginForm.submitted && usernameInput.invalid"
                 class="invalid-feedback"
@@ -31,7 +30,7 @@
                 </div>
               </div>
             </div>
-            <!-- Password Field -->
+
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
               <input
@@ -55,7 +54,7 @@
                 </div>
               </div>
             </div>
-            <!-- Submit Button -->
+
             <div class="d-grid gap-2">
               <button
                 type="submit"
@@ -66,7 +65,6 @@
               </button>
             </div>
 
-            <!-- General Error Message -->
             <div
               *ngIf="errorMessage"
               class="alert alert-danger mt-3"
@@ -76,7 +74,7 @@
             </div>
           </div>
         </form>
-        <!-- Optional: Link to Registration Page -->
+
         <div class="text-center mt-3">
           <p>Don't have an account? <a routerLink="/register">Sign up</a></p>
         </div>

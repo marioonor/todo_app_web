@@ -26,8 +26,6 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  /* Consider adding a background color to prevent text overlap during scroll if needed */
-  /* background-color: white; */
 }
 
 .action-buttons-cell {

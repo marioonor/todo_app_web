@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
 
 import { TodolistComponent } from './todolist.component';
-import { TodoService } from '../service/todo.service'; // Import TodoService
+import { TodoService } from '../service/todo.service'; 
 
 describe('TodolistComponent', () => {
   let component: TodolistComponent;
@@ -12,17 +11,16 @@ describe('TodolistComponent', () => {
   let mockTodoService: jasmine.SpyObj<TodoService>;
 
   beforeEach(async () => {
-    // Create a spy object for TodoService
     mockTodoService = jasmine.createSpyObj('TodoService', ['addTodo', 'getTodos']);
 
     await TestBed.configureTestingModule({
       imports: [
-        TodolistComponent, // The component itself is standalone and imports FormsModule
-        HttpClientTestingModule, // For dependencies of TodoService if not fully mocked
-        RouterTestingModule      // For Router dependency
+        TodolistComponent, 
+        HttpClientTestingModule, 
+        RouterTestingModule     
       ],
       providers: [
-        { provide: TodoService, useValue: mockTodoService } // Provide the mock service
+        { provide: TodoService, useValue: mockTodoService } 
       ]
     })
     .compileComponents();

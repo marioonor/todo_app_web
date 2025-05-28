@@ -86,7 +86,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     this.todoService.addTodo(this.newTodo).subscribe({
       next: (addedTodo) => {
         alert('Todo item added successfully!');
-        this.loadTodos(); // Refresh list
+        this.loadTodos(); 
         this.newTodo = { title: '', description: '', status: 'PENDING', remarks: '', dateStart: '', dateEnd: '' }; 
         if (addTodoForm) {
             addTodoForm.resetForm({ status: 'PENDING' }); 

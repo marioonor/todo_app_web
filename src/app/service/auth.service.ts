@@ -9,13 +9,12 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private authApiUrl = `${environment.apiUrl}/auth`; // Base URL for auth endpoints
-  private currentUserKey = 'currentUser'; // Key for storing user in localStorage
+  private authApiUrl = `${environment.apiUrl}/auth`; 
+  private currentUserKey = 'currentUser'; 
 
   private currentUserSubject: BehaviorSubject<UserResponse | null>;
   public currentUser: Observable<UserResponse | null>;
 
-  // Property to store the attempted URL
   public redirectUrl: string | null = null;
 
   constructor(private http: HttpClient, private router: Router) {
@@ -37,10 +36,9 @@ export class AuthService {
     credentials: Pick<RegistrationPayload, 'username' | 'password'>
   ): Observable<UserResponse> {
     return this.http
-      .post<UserResponse>(`${this.authApiUrl}/login`, credentials) // <--- Correctly uses POST
+      .post<UserResponse>(`${this.authApiUrl}/login`, credentials)
       .pipe(
         tap((user) => {
-          // Assuming the login response includes the UserResponse object
           if (user && user.token) {
             localStorage.setItem(this.currentUserKey, JSON.stringify(user));
             this.currentUserSubject.next(user);

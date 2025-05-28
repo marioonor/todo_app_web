@@ -1,6 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing'; // Good for services if not fully mocked
-
 import { RegisterComponent } from './register.component';
 
 describe('RegisterComponent', () => {
