@@ -1,13 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>TodoappWeb</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>TodoappWeb</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <script>
+      // Prevent caching of authenticated pages on back/forward navigation
+      window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+          // Page was restored from bfcache
+          console.log(
+            "Page loaded from bfcache. Forcing reload to re-evaluate guards."
+          );
+          // Check if the current route is one that should be protected
+          // A simple check based on URL path (you might need a more robust check)
+          if (window.location.pathname.startsWith("/todo-list")) {
+            window.location.reload(); // Force a full reload
+          }
+          // Alternatively, you could dispatch a custom event or call an Angular service method
+          // if you have a way to access it globally, but reload is simplest.
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
 </html>

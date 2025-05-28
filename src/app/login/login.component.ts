@@ -4,7 +4,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../service/auth.service'; 
-import { AuthenService } from '../guards/AuthService';
+// import { AuthenService } from '../guards/AuthService';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +22,7 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService, 
-    private authenService: AuthenService, 
+    // private authenService: AuthenService, 
     private router: Router
   ) {}
 
@@ -49,11 +49,7 @@ export class LoginComponent {
           this.router.navigate([redirectUrl]);
         } else {
           console.error('Login successful, but no token was found in the response from AuthService.');
-          this.errorMessage = 'Authentication failed: Token not provided by the server.';
-          
-          if (this.authenService.isUserLoggedIn()) {
-            this.authenService.Logout();
-          }
+          this.errorMessage = 'Authentication failed: User data or token not provided by the server after login.';
         }
 
       },
