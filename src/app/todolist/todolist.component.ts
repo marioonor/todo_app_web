@@ -178,7 +178,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
     }
   }
 
-  signOut(): void {
-    this.authService.logout();
-  }
+  logout() {
+  this.authService.logout();
+  this.router.navigate(['']);
+}
 }
