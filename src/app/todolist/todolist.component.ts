@@ -324,14 +324,18 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   getStatusClass(status: string): string {
-    return (
-      {
-        PENDING: 'bg-warning text-dark',
-        IN_PROGRESS: 'bg-info text-white',
-        COMPLETED: 'bg-success text-white',
-        CANCELLED: 'bg-secondary text-white',
-      }[status] || 'bg-light text-dark'
-    );
+    switch (status) {
+      case 'PENDING':
+        return 'bg-warning text-dark';
+      case 'IN_PROGRESS':
+        return 'bg-info text-white';
+      case 'COMPLETED':
+        return 'bg-success text-white';
+      case 'CANCELLED':
+        return 'bg-secondary text-white';
+      default:
+        return 'bg-light text-dark';
+    }
   }
 
   getStatusLabel(status: string): string {

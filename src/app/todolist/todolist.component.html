@@ -66,9 +66,10 @@
 <div
   *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0"
   class="row g-3"
+  style="padding: 10px"
 >
   <div class="col-12 col-md-6 col-lg-3" *ngFor="let status of connectedLists">
-    <div class="card h-100" *ngIf="currentView === 'kanban'" style="margin-left: 10px; margin-right: 10px;">
+    <div class="card h-100" *ngIf="currentView === 'kanban'">
       <div class="card-header text-center" [ngClass]="getStatusClass(status)">
         <strong>{{ getStatusLabel(status) }}</strong>
       </div>
@@ -134,7 +135,7 @@
 <div
   class="table-container table-responsive"
   *ngIf="currentView === 'simpleList'"
-  style="margin-left: 10px; margin-right: 10px;"
+  style="margin-left: 10px; margin-right: 10px"
 >
   <table class="table table-bordered table-striped table-hover">
     <thead class="thead-dark text-nowrap sticky-header">
@@ -187,8 +188,12 @@
       <tr *ngFor="let todo of todos" class="text-center">
         <!-- <td>{{ todo.id }}</td> -->
         <td>{{ todo.title }}</td>
-        <td>{{ todo.description }}</td>
-        <td class="text-nowrap">{{ todo.status }}</td>
+        <td class="description-cell">{{ todo.description }}</td>
+        <td class="text-nowrap">
+          <span class="badge" [ngClass]="getStatusClass(todo.status)">
+            {{ getStatusLabel(todo.status) }}
+          </span>
+        </td>
         <td class="text-nowrap">{{ todo.remarks }}</td>
         <td class="text-nowrap">
           {{ todo.dateStart | date : "yyyy-MM-dd" }}
