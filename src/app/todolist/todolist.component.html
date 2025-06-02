@@ -1,17 +1,18 @@
 <div
   class="header-container d-flex justify-content-between align-items-center mb-4"
+  style="background-color: #010e5b; padding: 10px; border-radius: 10px;"
 >
-  <img [src]="imagePath" alt="ToDo App Banner" class="header-image" />
+  <img [src]="imagePath" alt="ToDo App Banner" class="header-image"/>
   <h4 class="mb-0">
-    <strong class="text-primary">{{ userFirstName }}</strong>
+    <strong class="text-primary" style="color: aliceblue;">{{ userFirstName }}</strong>
   </h4>
-  <button type="button" class="btn btn-outline-danger" (click)="logout()">
+  <button type="button" class="btn btn-outline-danger" (click)="logout()" style="color: aliceblue;">
     Sign Out
   </button>
 </div>
 
 <div class="text-center mb-3">
-  <h1>To Do List - Kanban Board</h1>
+  <h1>To Do List</h1>
   <button
     type="button"
     class="btn btn-success mt-2"
@@ -66,11 +67,11 @@
 <div
   *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0"
   class="row g-3"
-  style="padding: 10px"
+  
 >
   <div class="col-12 col-md-6 col-lg-3" *ngFor="let status of connectedLists">
-    <div class="card h-100" *ngIf="currentView === 'kanban'">
-      <div class="card-header text-center" [ngClass]="getStatusClass(status)">
+    <div class="card h-100" *ngIf="currentView === 'kanban'" style=" overflow-y: scroll; max-height: 98vh; margin: 0;">
+      <div class="card-header text-center" [ngClass]="getStatusClass(status)" style="position: sticky; top: 0; z-index: 1;">
         <strong>{{ getStatusLabel(status) }}</strong>
       </div>
       <div
@@ -300,7 +301,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" >
               <label for="addStatus" class="form-label">Status</label>
               <select
                 class="form-select"

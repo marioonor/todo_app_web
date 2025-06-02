@@ -54,7 +54,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
 
   editTodoData: Todo | null = null;
 
-  userFirstName: string = 'Guest';
+  userFirstName: string = 'Admin';
   private userAuthSubscription: Subscription | undefined;
 
   constructor(
@@ -70,7 +70,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
         if (user && user.firstName) {
           this.userFirstName = user.firstName;
         } else {
-          this.userFirstName = 'Guest';
+          this.userFirstName = 'Admin';
         }
       }
     );
