@@ -255,6 +255,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       });
     }
   }
+  
 
   private updateAndPersistOrder(list: Todo[]): Observable<any> {
     const updateObservables: Observable<Todo | null>[] = [];
