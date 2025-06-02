@@ -18,6 +18,7 @@ import { catchError } from 'rxjs/operators';
   selector: 'app-todolist',
   templateUrl: './todolist.component.html',
   styleUrls: ['./todolist.component.css'],
+  standalone: true,
   imports: [CommonModule, FormsModule, DragDropModule],
 })
 export class TodolistComponent implements OnInit, OnDestroy {
@@ -28,6 +29,9 @@ export class TodolistComponent implements OnInit, OnDestroy {
     'COMPLETED',
     'CANCELLED',
   ];
+
+  currentView: 'kanban' | 'simpleList' = 'kanban';
+
   todos: Todo[] = [];
   isLoading: boolean = false;
   errorMessage: string | null = null;
@@ -72,6 +76,10 @@ export class TodolistComponent implements OnInit, OnDestroy {
     );
 
     this.organizeTodos();
+  }
+
+  setView(view: 'kanban' | 'simpleList'): void {
+    this.currentView = view;
   }
 
   ngOnDestroy(): void {
@@ -255,7 +263,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       });
     }
   }
-  
+
 
   private updateAndPersistOrder(list: Todo[]): Observable<any> {
     const updateObservables: Observable<Todo | null>[] = [];

@@ -38,3 +38,9 @@
   background-color: #f0f8ff;
   border: 2px dashed #007bff;
 }
+
+.view-switcher {
+  display: flex;
+  justify-content: left;
+  margin: 20px;
+}
