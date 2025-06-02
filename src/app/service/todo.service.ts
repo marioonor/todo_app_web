@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Todo } from '../models/todo.models';
+import { Todo, TodoStatus } from '../models/todo.models';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -55,5 +55,10 @@ export class TodoService {
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
+  }
+
+  updateTodoStatus(id: number, newStatus: TodoStatus): Observable<boolean> {
+    console.log(`Updated Todo ID ${id} to ${newStatus}`);
+    return of(true); 
   }
 }

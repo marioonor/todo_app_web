@@ -1,21 +1,33 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TodoService } from '../service/todo.service';
-import { Todo } from '../models/todo.models';
+import { Todo, TodoStatus } from '../models/todo.models';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../service/auth.service';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin, of, Observable, concat } from 'rxjs';
+import {
+  CdkDragDrop,
+  DragDropModule,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-todolist',
   templateUrl: './todolist.component.html',
   styleUrls: ['./todolist.component.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DragDropModule],
 })
 export class TodolistComponent implements OnInit, OnDestroy {
   imagePath: string = 'assets/images/image.png';
-
+  connectedLists: TodoStatus[] = [
+    'PENDING',
+    'IN_PROGRESS',
+    'COMPLETED',
+    'CANCELLED',
+  ];
   todos: Todo[] = [];
   isLoading: boolean = false;
   errorMessage: string | null = null;
@@ -27,6 +39,13 @@ export class TodolistComponent implements OnInit, OnDestroy {
     remarks: '',
     dateStart: '',
     dateEnd: '',
+  };
+
+  todosByStatus: { [key in TodoStatus]: Todo[] } = {
+    PENDING: [],
+    IN_PROGRESS: [],
+    COMPLETED: [],
+    CANCELLED: [],
   };
 
   editTodoData: Todo | null = null;
@@ -51,6 +70,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    this.organizeTodos();
   }
 
   ngOnDestroy(): void {
@@ -66,6 +87,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.todos = data;
         this.isLoading = false;
+        this.organizeTodos();
       },
       error: (err) => {
         this.errorMessage = err.message || 'Could not load todos.';
@@ -179,7 +201,142 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-  this.authService.logout();
-  this.router.navigate(['']);
-}
+    this.authService.logout();
+    this.router.navigate(['']);
+  }
+
+  onDrop(event: CdkDragDrop<Todo[]>): void {
+    const previousContainerData = event.previousContainer.data;
+    const currentContainerData = event.container.data;
+
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        currentContainerData,
+        event.previousIndex,
+        event.currentIndex
+      );
+      this.updateAndPersistOrder(currentContainerData).subscribe({
+        next: () => console.log('Order updated for the list.'),
+        error: (err) => {
+          console.error('Failed to update list order:', err);
+          this.loadTodos();
+          alert('Failed to save new order. Please refresh and try again.');
+        },
+      });
+    } else {
+      const movedItem = previousContainerData[event.previousIndex];
+      const newStatus = event.container.id as TodoStatus;
+
+      transferArrayItem(
+        previousContainerData,
+        currentContainerData,
+        event.previousIndex,
+        event.currentIndex
+      );
+
+      movedItem.status = newStatus;
+
+      const operations: Observable<any>[] = [
+        this.updateAndPersistOrder(previousContainerData),
+        this.updateAndPersistOrder(currentContainerData),
+      ];
+
+      forkJoin(operations).subscribe({
+        next: () => {
+          console.log(
+            'Todo moved, and orders for both lists updated successfully.'
+          );
+        },
+        error: (err) => {
+          console.error('Failed to update todo or list orders:', err);
+          this.loadTodos();
+          alert('Failed to move task. Please refresh and try again.');
+        },
+      });
+    }
+  }
+
+  private updateAndPersistOrder(list: Todo[]): Observable<any> {
+    const updateObservables: Observable<Todo | null>[] = [];
+
+    list.forEach((todo, index) => {
+      if (todo.id !== undefined) {
+        const updatedTodoPayload: Todo = {
+          ...todo,
+          order: index,
+        };
+
+        if (todo.order !== index) {
+          todo.order = index;
+        }
+        updateObservables.push(
+          this.todoService.updateTodo(todo.id, updatedTodoPayload).pipe(
+            catchError((err) => {
+              console.error(
+                `Failed to update todo ${todo.id} with payload ${JSON.stringify(
+                  updatedTodoPayload
+                )}:`,
+                err
+              );
+              throw err;
+            })
+          )
+        );
+      }
+    });
+
+    if (updateObservables.length === 0) {
+      return of(null);
+    }
+
+    return forkJoin(updateObservables);
+  }
+
+  organizeTodos(): void {
+    const newTodosByStatus: { [key in TodoStatus]: Todo[] } = {
+      PENDING: [],
+      IN_PROGRESS: [],
+      COMPLETED: [],
+      CANCELLED: [],
+    };
+
+    for (const statusKey of this.connectedLists as TodoStatus[]) {
+      if (newTodosByStatus.hasOwnProperty(statusKey)) {
+        newTodosByStatus[statusKey] = this.todos
+          .filter((todo) => todo.status === statusKey)
+          .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+      }
+    }
+    this.todosByStatus = newTodosByStatus;
+  }
+
+  getTodosByStatus(status: TodoStatus): Todo[] {
+    return this.todosByStatus[status] || [];
+  }
+
+  getStatusClass(status: string): string {
+    return (
+      {
+        PENDING: 'bg-warning text-dark',
+        IN_PROGRESS: 'bg-info text-white',
+        COMPLETED: 'bg-success text-white',
+        CANCELLED: 'bg-secondary text-white',
+      }[status] || 'bg-light text-dark'
+    );
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'PENDING':
+        return 'Pending';
+      case 'IN_PROGRESS':
+        return 'In Progress';
+      case 'COMPLETED':
+        return 'Completed';
+      case 'CANCELLED':
+        return 'Cancelled';
+      default:
+        return status;
+    }
+  }
 }

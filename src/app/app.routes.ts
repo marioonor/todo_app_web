@@ -15,5 +15,5 @@ export const routes: Routes = [
     component: TodolistComponent,
     canActivate: [AuthGuard] 
   },
-  { path: '**', redirectTo: '/login' },
+  { path: '**', redirectTo: '/home' },
 ];

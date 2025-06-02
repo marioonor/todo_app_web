@@ -9,95 +9,104 @@
     Sign Out
   </button>
 </div>
-<div class="text-center"><h1>To Do List</h1></div>
-<div class="text-center">
+
+<div class="text-center mb-3">
+  <h1>To Do List - Kanban Board</h1>
   <button
     type="button"
-    class="btn btn-success mb-3 add-todo-btn"
+    class="btn btn-success mt-2"
     data-bs-toggle="modal"
     data-bs-target="#addTodoModal"
   >
     Add Todo
   </button>
 </div>
-<div class="table-container table-responsive">
-  <table class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark text-nowrap sticky-header">
-      <tr class="text-center">
-        <th>Id</th>
-        <th>Title</th>
-        <th>Description</th>
-        <th>Status</th>
-        <th>Remarks</th>
-        <th>Date Start</th>
-        <th>Date End</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody *ngIf="isLoading">
-      <tr>
-        <td colspan="8" class="text-center">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+
+<div *ngIf="isLoading" class="text-center my-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p>Loading todos...</p>
+</div>
+
+<div *ngIf="!isLoading && errorMessage" class="text-center text-danger my-5">
+  <p>{{ errorMessage }}</p>
+  <button class="btn btn-outline-primary" (click)="loadTodos()">
+    Try Again
+  </button>
+</div>
+
+<div
+  *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) === 0"
+  class="text-center my-5"
+>
+  <p>No todos found. Click "Add Todo" to create one!</p>
+</div>
+
+<div
+  *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0"
+  class="row g-3"
+>
+  <div class="col-12 col-md-6 col-lg-3" *ngFor="let status of connectedLists">
+    <div class="card h-100">
+      <div class="card-header text-center" [ngClass]="getStatusClass(status)">
+        <strong>{{ getStatusLabel(status) }}</strong>
+      </div>
+      <div
+        class="card-body d-flex flex-column gap-3"
+        style="min-height: 300px"
+        cdkDropList
+        [id]="status"
+        [cdkDropListData]="getTodosByStatus(status)"
+        [cdkDropListConnectedTo]="connectedLists" 
+        (cdkDropListDropped)="onDrop($event)"
+      >
+        <ng-container *ngIf="getTodosByStatus(status).length === 0">
+          <p class="text-muted text-center my-auto">No tasks here</p>
+        </ng-container>
+        <ng-container *ngFor="let todo of getTodosByStatus(status)">
+          <div class="card shadow-sm" cdkDrag>
+            <div class="card-body p-3">
+              <h5 class="card-title">{{ todo.title }}</h5>
+              <p class="card-text">{{ todo.description }}</p>
+              <p class="mb-1">
+                <small>
+                  <strong>Start:</strong>
+                  {{ todo.dateStart | date : "yyyy-MM-dd" }} </small
+                ><br />
+                <small>
+                  <strong>End:</strong> {{ todo.dateEnd | date : "yyyy-MM-dd" }}
+                </small>
+              </p>
+              <p *ngIf="todo.remarks" class="mb-1">
+                <small
+                  ><em>Remarks: {{ todo.remarks }}</em></small
+                >
+              </p>
+              <div class="d-flex justify-content-between">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editTodoModal"
+                  (click)="selectTodoForEdit(todo)"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteTodo(todo.id!)"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
-          <p>Loading todos...</p>
-        </td>
-      </tr>
-    </tbody>
-
-    <tbody *ngIf="!isLoading && errorMessage">
-      <tr>
-        <td colspan="8" class="text-center text-danger">
-          <p>{{ errorMessage }}</p>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-primary"
-            (click)="loadTodos()"
-          >
-            Try Again
-          </button>
-        </td>
-      </tr>
-    </tbody>
-
-    <tbody *ngIf="!isLoading && !errorMessage && todos?.length === 0">
-      <tr>
-        <td colspan="8" class="text-center">
-          <p>No todos found. Click "Add Todo" to create one!</p>
-        </td>
-      </tr>
-    </tbody>
-
-    <tbody *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0">
-      <tr *ngFor="let todo of todos" class="text-center">
-        <td>{{ todo.id }}</td>
-        <td>{{ todo.title }}</td>
-        <td>{{ todo.description }}</td>
-        <td class="text-nowrap">{{ todo.status }}</td>
-        <td class="text-nowrap">{{ todo.remarks }}</td>
-        <td class="text-nowrap">{{ todo.dateStart | date : "yyyy-MM-dd" }}</td>
-        <td class="text-nowrap">{{ todo.dateEnd | date : "yyyy-MM-dd" }}</td>
-        <td class="text-nowrap action-buttons-cell">
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#editTodoModal"
-            (click)="selectTodoForEdit(todo)"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            class="btn btn-danger btn-sm"
-            (click)="deleteTodo(todo.id!)"
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </ng-container>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div

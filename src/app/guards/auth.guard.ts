@@ -44,6 +44,6 @@ export class AuthGuard implements CanActivate {
       `[AuthGuard] User not authenticated. Attempted URL: ${url}. Redirecting to /login.`
     );
 
-    return this.router.parseUrl('/login');
+    return this.router.parseUrl('/home');
   }
 }
