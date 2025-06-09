@@ -18,5 +18,22 @@
 }
 
 .bg-dark {
-  background-color: #489cf0 !important;
+  background-color: #dbe3eb !important;
 }
+
+.nav-item.hover:hover {
+  background-color: #e6f4ea; 
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-item.hover:hover .nav-link {
+  color: #2e61d7; 
+}
+
+.nav-item.hover:hover img {
+  background-color: #2e61d7;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+

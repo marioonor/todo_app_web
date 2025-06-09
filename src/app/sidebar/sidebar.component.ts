@@ -7,5 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
-
+  imageAddTask: string = 'assets/images/addtask.png';
+  createProject: string = 'assets/images/createproject.png';
+  allTasks: string = 'assets/images/alltask.png';
+  allProjects: string = 'assets/images/allprojects.png';
 }

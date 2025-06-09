@@ -1,35 +1,53 @@
 <div class="d-flex">
   <!-- Sidebar -->
-  <nav id="sidebar" class="bg-dark text-white p-3">
+  <nav id="sidebar" class="bg-dark text-black p-3">
     <div class="sidebar-header">
       <h3>Projects</h3>
     </div>
     <ul class="nav flex-column">
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white" routerLink="/dashboard">
-          <i class="bi bi-speedometer2 me-2"></i> Create New Project
+      <li class="nav-item mb-2 hover" style="cursor: pointer;">
+        <a class="nav-link text-black" routerLink="/dashboard">
+          <img
+            [src]="createProject"
+            class="btn-success"
+            style="width: 40px; height: 40px; padding: 5px;"
+            alt=""
+          /> Create New Project
         </a>
       </li>
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white" routerLink="/profile">
-          <i class="bi bi-person-circle me-2"></i> Add Task
+      <li class="nav-item mb-2 hover" style="cursor: pointer;">
+        <a class="nav-link text-black" routerLink="/profile">
+          <img
+            [src]="imageAddTask"
+            class="btn-success"
+            style="width: 40px; height: 40px; padding: 5px;"
+            alt=""
+          /> Add Task
         </a>
       </li>
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white" routerLink="/settings">
-          <i class="bi bi-gear me-2"></i> All Tasks
+      <li class="nav-item mb-2 hover" style="cursor: pointer;">
+        <a class="nav-link text-black" routerLink="/settings">
+          <img
+            [src]="allTasks"
+            class="btn-success"
+            style="width: 40px; height: 40px; padding: 5px;"
+            alt=""
+          /> All Tasks
         </a>
       </li>
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white" routerLink="/settings">
-          <i class="bi bi-gear me-2"></i> All Projects
+      <li class="nav-item mb-2 hover" style="cursor: pointer;">
+        <a class="nav-link text-black" routerLink="/settings">
+          <img
+            [src]="allProjects"
+            class="btn-success"
+            style="width: 45px; height: 45px; padding: 5px; "
+            alt=""
+          /> All Projects
         </a>
       </li>
     </ul>
-    <ul class="nav flex-column">
-      <li class="nav-item mb-2">
-        <a href=""><i class="bi bi-gear me-2">My Projects</i></a>
-      </li>
-    </ul>
+    <div class="sidebar-header">
+      <h5>My Projects</h5>
+    </div>
   </nav>
 </div>
