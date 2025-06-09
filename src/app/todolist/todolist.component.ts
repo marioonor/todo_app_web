@@ -13,16 +13,19 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { catchError } from 'rxjs/operators';
+import { HeaderComponent } from '../header/header.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-todolist',
   templateUrl: './todolist.component.html',
   styleUrls: ['./todolist.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule],
+  imports: [CommonModule, FormsModule, DragDropModule, HeaderComponent, SidebarComponent],
 })
 export class TodolistComponent implements OnInit, OnDestroy {
   imagePath: string = 'assets/images/image.png';
+  imageAddTask: string = 'assets/images/addtask.png';
   connectedLists: TodoStatus[] = [
     'PENDING',
     'IN_PROGRESS',

@@ -1,13 +1,67 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow p-4">
-        <h3 class="text-center mb-4">Login</h3>
-
+<div
+  class="home-container"
+  style="display: flex; flex-direction: row; align-items: center"
+>
+  <div
+    style="
+      background-color: #0b0f51;
+      height: 100vh;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <img
+      [src]="imageanimatedPath"
+      style="
+        width: 300px;
+        transform: rotate(20deg);
+        height: 300px;
+        z-index: 1;
+        left: 37%;
+      "
+      alt=""
+    />
+  </div>
+  <!---------------------------------------------------->
+  <div class="container text-center" style="width: 50%">
+    <div
+      class="container text-center mt-5"
+      style="
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+      "
+    >
+      <img
+        [src]="imagePath"
+        alt="Dynamic Logo"
+        class="logo"
+        style="width: 200px; height: 200px"
+        role="button"
+        cursor="pointer"
+        (click)="goToHome()"
+      />
+      <div class="mb-4">
+        <p class="text-muted">Build your progress, one task at a time.</p>
+      </div>
+    </div>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
         <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
-          <div>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            "
+          >
             <div class="mb-3">
-              <label for="username" class="form-label">Username</label>
+              <!-- <label for="username" class="form-label">Username</label> -->
               <input
                 type="text"
                 class="form-control"
@@ -16,6 +70,8 @@
                 [(ngModel)]="credentials.username"
                 required
                 #usernameInput="ngModel"
+                placeholder="Username"
+                style="width: 341px"
                 [ngClass]="{
                   'is-invalid': loginForm.submitted && usernameInput.invalid
                 }"
@@ -31,20 +87,38 @@
               </div>
             </div>
 
-            <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
+            <div
+              class="mb-3"
+              style="
+                display: flex;
+                align-items: center;
+                border: rgb(226, 226, 226) 1px solid;
+                border-radius: 5px;
+              "
+            >
               <input
                 type="password"
                 class="form-control"
+                [type]="showpassword ? 'text' : 'password'"
                 id="password"
                 name="password"
                 [(ngModel)]="credentials.password"
                 required
                 #passwordInput="ngModel"
+                style="width: 300px; border: 0"
+                placeholder="Password"
                 [ngClass]="{
                   'is-invalid': loginForm.submitted && passwordInput.invalid
                 }"
               />
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                style="border: 0cap"
+                (click)="togglePassword()"
+              >
+                <i [class]="showpassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
               <div
                 *ngIf="loginForm.submitted && passwordInput.invalid"
                 class="invalid-feedback"
@@ -60,6 +134,8 @@
                 type="submit"
                 class="btn btn-primary btn-block"
                 [disabled]="loginForm.invalid"
+                style="width: 300px"
+                (click)="togglePassword()"
               >
                 Log In
               </button>
@@ -75,7 +151,7 @@
           </div>
         </form>
 
-        <div class="text-center mt-3">
+        <div class="m-3">
           <p>Don't have an account? <a routerLink="/register">Sign up</a></p>
         </div>
       </div>

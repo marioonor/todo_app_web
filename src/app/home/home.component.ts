@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent {
   imagePath: string = 'assets/images/image.png';
+  imageanimatedPath: string = 'assets/images/homelogo.gif';
+  todoimagePath: string = 'assets/images/todoimage.png';
 
   constructor(private router: Router) {}
 

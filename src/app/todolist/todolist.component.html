@@ -1,623 +1,687 @@
-<div
-  class="header-container d-flex justify-content-between align-items-center mb-4"
-  style="background-color: #010e5b; padding: 10px; border-radius: 10px;"
->
-  <img [src]="imagePath" alt="ToDo App Banner" class="header-image"/>
-  <h4 class="mb-0">
-    <strong class="text-primary" style="color: aliceblue;">{{ userFirstName }}</strong>
-  </h4>
-  <button type="button" class="btn btn-outline-danger" (click)="logout()" style="color: aliceblue;">
-    Sign Out
-  </button>
-</div>
-
-<div class="text-center mb-3">
-  <h1>To Do List</h1>
-  <button
-    type="button"
-    class="btn btn-success mt-2"
-    data-bs-toggle="modal"
-    data-bs-target="#addTodoModal"
-  >
-    Add Todo
-  </button>
-
-  <!-- Display button selection -->
-  <div class="view-switcher mb-3">
-    <button
-      class="btn btn-secondary me-2"
-      (click)="setView('kanban')"
-      [class.active]="currentView === 'kanban'"
-    >
-      Kanban View
-    </button>
-    <button
-      class="btn btn-secondary"
-      (click)="setView('simpleList')"
-      [class.active]="currentView === 'simpleList'"
-    >
-      List View
-    </button>
-  </div>
-  <hr />
-  <!-- Display button selection -->
-</div>
-
-<div *ngIf="isLoading" class="text-center my-5">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <p>Loading todos...</p>
-</div>
-
-<div *ngIf="!isLoading && errorMessage" class="text-center text-danger my-5">
-  <p>{{ errorMessage }}</p>
-  <button class="btn btn-outline-primary" (click)="loadTodos()">
-    Try Again
-  </button>
-</div>
-
-<div
-  *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) === 0"
-  class="text-center my-5"
->
-  <p>No todos found. Click "Add Todo" to create one!</p>
-</div>
-
-<div
-  *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0"
-  class="row g-3"
-  
->
-  <div class="col-12 col-md-6 col-lg-3" *ngFor="let status of connectedLists">
-    <div class="card h-100" *ngIf="currentView === 'kanban'" style=" overflow-y: scroll; max-height: 98vh; margin: 0;">
-      <div class="card-header text-center" [ngClass]="getStatusClass(status)" style="position: sticky; top: 0; z-index: 1;">
-        <strong>{{ getStatusLabel(status) }}</strong>
+<app-header></app-header>
+<div style="display: flex; flex-direction: row; width: 100%; top: 0">
+  <app-sidebar></app-sidebar>
+  <div class="container-fluid" style="background-color: #6aa7e4; height: 90vh">
+    <div class="row">
+      <div class="col-12">
+        <!-- <app-todolist></app-todolist> -->
       </div>
+    </div>
+    <div class="text-center">
+      <!-- Display button selection -->
       <div
-        class="card-body d-flex flex-column gap-3"
-        style="min-height: 300px"
-        cdkDropList
-        [id]="status"
-        [cdkDropListData]="getTodosByStatus(status)"
-        [cdkDropListConnectedTo]="connectedLists"
-        (cdkDropListDropped)="onDrop($event)"
+        class="d-flex justify-content-between align-items-center"
+        style="color: white"
       >
-        <ng-container *ngIf="getTodosByStatus(status).length === 0">
-          <p class="text-muted text-center my-auto">No tasks here</p>
-        </ng-container>
-        <ng-container *ngFor="let todo of getTodosByStatus(status)">
-          <div class="card shadow-sm" cdkDrag>
-            <div class="card-body p-3">
-              <h5 class="card-title">{{ todo.title }}</h5>
-              <p class="card-text">{{ todo.description }}</p>
-              <p class="mb-1">
-                <small>
-                  <strong>Start:</strong>
-                  {{ todo.dateStart | date : "yyyy-MM-dd" }} </small
-                ><br />
-                <small>
-                  <strong>End:</strong> {{ todo.dateEnd | date : "yyyy-MM-dd" }}
-                </small>
-              </p>
-              <p *ngIf="todo.remarks" class="mb-1">
-                <small
-                  ><em>Remarks: {{ todo.remarks }}</em></small
-                >
-              </p>
-              <div class="d-flex justify-content-between">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editTodoModal"
-                  (click)="selectTodoForEdit(todo)"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-danger"
-                  (click)="deleteTodo(todo.id!)"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+        <div class="btn-group" style="margin-left: 20px">
+          <div
+            role="button"
+            class="btn-secondary me-2 add-todo-btn"
+            (click)="setView('kanban')"
+            [class.active]="currentView === 'kanban'"
+          >
+            Kanban View
           </div>
-        </ng-container>
+          <div
+            role="button"
+            class="btn-secondary add-todo-btn"
+            (click)="setView('simpleList')"
+            [class.active]="currentView === 'simpleList'"
+          >
+            List View
+          </div>
+        </div>
+        <div
+          data-bs-toggle="modal"
+          data-bs-target="#addTodoModal"
+          role="button"
+          style="
+            color: rgb(255, 255, 255);
+            text-align: center;
+            margin-right: 20px;
+            cursor: pointer;
+          "
+        >
+          Add Task
+          <img
+            [src]="imageAddTask"
+            class="btn-success"
+            style="width: 40px; height: 40px; padding: 5px"
+            alt=""
+          />
+        </div>
+      </div>
+      <!-- Display button selection -->
+    </div>
+
+    <div *ngIf="isLoading" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading todos...</p>
+    </div>
+
+    <div
+      *ngIf="!isLoading && errorMessage"
+      class="text-center text-danger my-5"
+    >
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn-outline-primary" (click)="loadTodos()">
+        Try Again
+      </button>
+    </div>
+
+    <div
+      *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) === 0"
+      class="text-center my-5"
+    >
+      <p>No todos found. Click "Add Todo" to create one!</p>
+    </div>
+
+    <div
+      *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0"
+      class="row g-3"
+    >
+      <div
+        class="col-12 col-md-6 col-lg-3"
+        *ngFor="let status of connectedLists"
+      >
+        <div
+          class="card h-100"
+          *ngIf="currentView === 'kanban'"
+          style="
+            margin-left: 10px;
+            margin: 5px;
+            overflow-y: auto;
+            max-height: 83vh;
+            border-radius: 10px;
+          "
+        >
+          <div
+            class="card-header text-center"
+            [ngClass]="getStatusClass(status)"
+            style="position: sticky; top: 0; z-index: 1"
+          >
+            <strong>{{ getStatusLabel(status) }}</strong>
+          </div>
+          <div
+            class="card-body d-flex flex-column gap-3"
+            style="min-height: 300px"
+            cdkDropList
+            [id]="status"
+            [cdkDropListData]="getTodosByStatus(status)"
+            [cdkDropListConnectedTo]="connectedLists"
+            (cdkDropListDropped)="onDrop($event)"
+          >
+            <ng-container *ngIf="getTodosByStatus(status).length === 0">
+              <p class="text-muted text-center my-auto">No tasks here</p>
+            </ng-container>
+            <ng-container *ngFor="let todo of getTodosByStatus(status)">
+              <div class="card shadow-sm" cdkDrag>
+                <div class="card-body p-3">
+                  <h5 class="card-title">{{ todo.title }}</h5>
+                  <p class="card-text">{{ todo.description }}</p>
+                  <p class="mb-1">
+                    <small>
+                      <strong>Start:</strong>
+                      {{ todo.dateStart | date : "yyyy-MM-dd" }} </small
+                    ><br />
+                    <small>
+                      <strong>End:</strong>
+                      {{ todo.dateEnd | date : "yyyy-MM-dd" }}
+                    </small>
+                  </p>
+                  <p *ngIf="todo.remarks" class="mb-1">
+                    <small
+                      ><em>Remarks: {{ todo.remarks }}</em></small
+                    >
+                  </p>
+                  <div class="d-flex justify-content-between">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-primary"
+                      style="padding: 5px 10px"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editTodoModal"
+                      (click)="selectTodoForEdit(todo)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger"
+                      style="padding: 5px 10px"
+                      (click)="deleteTodo(todo.id!)"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Simple List View -->
+    <!-- Simple List View -->
 
-<div
-  class="table-container table-responsive"
-  *ngIf="currentView === 'simpleList'"
-  style="margin-left: 10px; margin-right: 10px"
->
-  <table class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark text-nowrap sticky-header">
-      <tr class="text-center">
-        <!-- <th>Id</th> -->
-        <th>Title</th>
-        <th>Description</th>
-        <th>Status</th>
-        <th>Remarks</th>
-        <th>Date Start</th>
-        <th>Date End</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody *ngIf="isLoading">
-      <tr>
-        <td colspan="8" class="text-center">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-          <p>Loading todos...</p>
-        </td>
-      </tr>
-    </tbody>
-
-    <tbody *ngIf="!isLoading && errorMessage">
-      <tr>
-        <td colspan="8" class="text-center text-danger">
-          <p>{{ errorMessage }}</p>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-primary"
-            (click)="loadTodos()"
-          >
-            Try Again
-          </button>
-        </td>
-      </tr>
-    </tbody>
-
-    <tbody *ngIf="!isLoading && !errorMessage && todos?.length === 0">
-      <tr>
-        <td colspan="8" class="text-center">
-          <p>No todos found. Click "Add Todo" to create one!</p>
-        </td>
-      </tr>
-    </tbody>
-
-    <tbody *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0">
-      <tr *ngFor="let todo of todos" class="text-center">
-        <!-- <td>{{ todo.id }}</td> -->
-        <td>{{ todo.title }}</td>
-        <td class="description-cell">{{ todo.description }}</td>
-        <td class="text-nowrap">
-          <span class="badge" [ngClass]="getStatusClass(todo.status)">
-            {{ getStatusLabel(todo.status) }}
-          </span>
-        </td>
-        <td class="text-nowrap">{{ todo.remarks }}</td>
-        <td class="text-nowrap">
-          {{ todo.dateStart | date : "yyyy-MM-dd" }}
-        </td>
-        <td class="text-nowrap">
-          {{ todo.dateEnd | date : "yyyy-MM-dd" }}
-        </td>
-        <td class="text-nowrap action-buttons-cell">
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#editTodoModal"
-            (click)="selectTodoForEdit(todo)"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            class="btn btn-danger btn-sm"
-            (click)="deleteTodo(todo.id!)"
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- Simple List View -->
-
-<div
-  class="modal fade"
-  id="addTodoModal"
-  tabindex="-1"
-  aria-labelledby="addTodoModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addTodoModalLabel">Add New Todo</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form (ngSubmit)="onAddTodo(addTodoForm)" #addTodoForm="ngForm">
-          <div class="mb-3">
-            <label for="addTitle" class="form-label">Title</label>
-            <input
-              type="text"
-              class="form-control"
-              id="addTitle"
-              name="title"
-              [(ngModel)]="newTodo.title"
-              required
-              #title="ngModel"
-              [attr.aria-invalid]="
-                title.invalid && (title.dirty || title.touched)
-                  ? 'true'
-                  : 'false'
-              "
-              aria-describedby="addTitleError"
-            />
-            <div
-              *ngIf="title.invalid && (title.dirty || title.touched)"
-              id="addTitleError"
-              class="text-danger"
-            >
-              Title is required.
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="addDescription" class="form-label">Description</label>
-            <textarea
-              class="form-control"
-              id="addDescription"
-              name="description"
-              [(ngModel)]="newTodo.description"
-              required
-              #description="ngModel"
-              [attr.aria-invalid]="
-                description.invalid &&
-                (description.dirty || description.touched)
-                  ? 'true'
-                  : 'false'
-              "
-              aria-describedby="addDescriptionError"
-            ></textarea>
-            <div
-              *ngIf="
-                description.invalid &&
-                (description.dirty || description.touched)
-              "
-              id="addDescriptionError"
-              class="text-danger"
-            >
-              Description is required.
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3" >
-              <label for="addStatus" class="form-label">Status</label>
-              <select
-                class="form-select"
-                id="addStatus"
-                name="status"
-                [(ngModel)]="newTodo.status"
-                required
-                #status="ngModel"
-                [attr.aria-invalid]="
-                  status.invalid && (status.dirty || status.touched)
-                    ? 'true'
-                    : 'false'
-                "
-                aria-describedby="addStatusError"
-              >
-                <option value="PENDING">Pending</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div
-                *ngIf="status.invalid && (status.dirty || status.touched)"
-                id="addStatusError"
-                class="text-danger"
-              >
-                Status is required.
+    <div
+      class="table-responsive"
+      *ngIf="currentView === 'simpleList'"
+      style="
+        margin-left: 10px;
+        margin-right: 10px;
+        overflow-y: auto;
+        max-height: 83vh;
+        border-radius: 10px;
+      "
+    >
+      <table class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark text-nowrap sticky-header">
+          <tr class="text-center">
+            <!-- <th>Id</th> -->
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Remarks</th>
+            <th>Date Start</th>
+            <th>Date End</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="isLoading">
+          <tr>
+            <td colspan="8" class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
               </div>
-              <label for="addRemarks" class="form-label"
-                >Remarks (Optional)</label
+              <p>Loading todos...</p>
+            </td>
+          </tr>
+        </tbody>
+
+        <tbody *ngIf="!isLoading && errorMessage">
+          <tr>
+            <td colspan="8" class="text-center text-danger">
+              <p>{{ errorMessage }}</p>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                (click)="loadTodos()"
               >
-              <input
-                type="text"
-                class="form-control"
-                id="addRemarks"
-                name="remarks"
-                [(ngModel)]="newTodo.remarks"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="addDateStart" class="form-label">Start Date</label>
-              <input
-                type="date"
-                class="form-control"
-                id="addDateStart"
-                name="dateStart"
-                [(ngModel)]="newTodo.dateStart"
-                required
-                #dateStart="ngModel"
-                [attr.aria-invalid]="
-                  dateStart.invalid && (dateStart.dirty || dateStart.touched)
-                    ? 'true'
-                    : 'false'
-                "
-                aria-describedby="addDateStartError"
-              />
-              <div
-                *ngIf="
-                  dateStart.invalid && (dateStart.dirty || dateStart.touched)
-                "
-                id="addDateStartError"
-                class="text-danger"
+                Try Again
+              </button>
+            </td>
+          </tr>
+        </tbody>
+
+        <tbody *ngIf="!isLoading && !errorMessage && todos?.length === 0">
+          <tr>
+            <td colspan="8" class="text-center">
+              <p>No todos found. Click "Add Todo" to create one!</p>
+            </td>
+          </tr>
+        </tbody>
+
+        <tbody *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0">
+          <tr *ngFor="let todo of todos" class="text-center">
+            <!-- <td>{{ todo.id }}</td> -->
+            <td>{{ todo.title }}</td>
+            <td class="description-cell">{{ todo.description }}</td>
+            <td class="text-nowrap">
+              <span
+                class="badge"
+                style="padding: 5px 10px"
+                [ngClass]="getStatusClass(todo.status)"
               >
-                Start Date is required.
-              </div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="addDateEnd" class="form-label">End Date</label>
-              <input
-                type="date"
-                class="form-control"
-                id="addDateEnd"
-                name="dateEnd"
-                [(ngModel)]="newTodo.dateEnd"
-                required
-                #dateEnd="ngModel"
-                [attr.aria-invalid]="
-                  dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)
-                    ? 'true'
-                    : 'false'
-                "
-                aria-describedby="addDateEndError"
-              />
-              <div
-                *ngIf="dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)"
-                id="addDateEndError"
-                class="text-danger"
+                {{ getStatusLabel(todo.status) }}
+              </span>
+            </td>
+            <td class="text-nowrap">{{ todo.remarks }}</td>
+            <td class="text-nowrap">
+              {{ todo.dateStart | date : "yyyy-MM-dd" }}
+            </td>
+            <td class="text-nowrap">
+              {{ todo.dateEnd | date : "yyyy-MM-dd" }}
+            </td>
+            <td class="text-nowrap">
+              <button
+                type="button"
+                style="padding: 5px 10px; margin: 5px"
+                class="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#editTodoModal"
+                (click)="selectTodoForEdit(todo)"
               >
-                End Date is required.
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
+                Edit
+              </button>
+              <button
+                type="button"
+                style="padding: 5px 10px"
+                class="btn btn-danger btn-sm"
+                (click)="deleteTodo(todo.id!)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Simple List View -->
+
+    <div
+      class="modal fade"
+      id="addTodoModal"
+      tabindex="-1"
+      aria-labelledby="addTodoModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addTodoModalLabel">Add New Todo</h5>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn-close"
               data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="addTodoForm.invalid"
-            >
-              Save Todo
-            </button>
+              aria-label="Close"
+            ></button>
           </div>
-        </form>
+          <div class="modal-body">
+            <form (ngSubmit)="onAddTodo(addTodoForm)" #addTodoForm="ngForm">
+              <div class="mb-3">
+                <label for="addTitle" class="form-label">Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="addTitle"
+                  name="title"
+                  [(ngModel)]="newTodo.title"
+                  required
+                  #title="ngModel"
+                  [attr.aria-invalid]="
+                    title.invalid && (title.dirty || title.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="addTitleError"
+                />
+                <div
+                  *ngIf="title.invalid && (title.dirty || title.touched)"
+                  id="addTitleError"
+                  class="text-danger"
+                >
+                  Title is required.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="addDescription" class="form-label"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="addDescription"
+                  name="description"
+                  [(ngModel)]="newTodo.description"
+                  required
+                  #description="ngModel"
+                  [attr.aria-invalid]="
+                    description.invalid &&
+                    (description.dirty || description.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="addDescriptionError"
+                ></textarea>
+                <div
+                  *ngIf="
+                    description.invalid &&
+                    (description.dirty || description.touched)
+                  "
+                  id="addDescriptionError"
+                  class="text-danger"
+                >
+                  Description is required.
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="addStatus" class="form-label">Status</label>
+                  <select
+                    class="form-select"
+                    id="addStatus"
+                    name="status"
+                    [(ngModel)]="newTodo.status"
+                    required
+                    #status="ngModel"
+                    [attr.aria-invalid]="
+                      status.invalid && (status.dirty || status.touched)
+                        ? 'true'
+                        : 'false'
+                    "
+                    aria-describedby="addStatusError"
+                  >
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div
+                    *ngIf="status.invalid && (status.dirty || status.touched)"
+                    id="addStatusError"
+                    class="text-danger"
+                  >
+                    Status is required.
+                  </div>
+                  <label for="addRemarks" class="form-label"
+                    >Remarks (Optional)</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="addRemarks"
+                    name="remarks"
+                    [(ngModel)]="newTodo.remarks"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="addDateStart" class="form-label"
+                    >Start Date</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="addDateStart"
+                    name="dateStart"
+                    [(ngModel)]="newTodo.dateStart"
+                    required
+                    #dateStart="ngModel"
+                    [attr.aria-invalid]="
+                      dateStart.invalid &&
+                      (dateStart.dirty || dateStart.touched)
+                        ? 'true'
+                        : 'false'
+                    "
+                    aria-describedby="addDateStartError"
+                  />
+                  <div
+                    *ngIf="
+                      dateStart.invalid &&
+                      (dateStart.dirty || dateStart.touched)
+                    "
+                    id="addDateStartError"
+                    class="text-danger"
+                  >
+                    Start Date is required.
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="addDateEnd" class="form-label">End Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="addDateEnd"
+                    name="dateEnd"
+                    [(ngModel)]="newTodo.dateEnd"
+                    required
+                    #dateEnd="ngModel"
+                    [attr.aria-invalid]="
+                      dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)
+                        ? 'true'
+                        : 'false'
+                    "
+                    aria-describedby="addDateEndError"
+                  />
+                  <div
+                    *ngIf="
+                      dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)
+                    "
+                    id="addDateEndError"
+                    class="text-danger"
+                  >
+                    End Date is required.
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="addTodoForm.invalid"
+                >
+                  Save Todo
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div
-  class="modal fade"
-  id="editTodoModal"
-  tabindex="-1"
-  aria-labelledby="editTodoModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editTodoModalLabel">Edit Todo</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body" *ngIf="editTodoData">
-        <form (ngSubmit)="onUpdateTodo(editTodoForm)" #editTodoForm="ngForm">
-          <input type="hidden" name="id" [(ngModel)]="editTodoData.id" />
-
-          <div class="mb-3">
-            <label for="editTitle" class="form-label">Title</label>
-            <input
-              type="text"
-              class="form-control"
-              id="editTitle"
-              name="title"
-              [(ngModel)]="editTodoData.title"
-              required
-              #editTitle="ngModel"
-              [attr.aria-invalid]="
-                editTitle.invalid && (editTitle.dirty || editTitle.touched)
-                  ? 'true'
-                  : 'false'
-              "
-              aria-describedby="editTitleError"
-            />
-            <div
-              *ngIf="
-                editTitle.invalid && (editTitle.dirty || editTitle.touched)
-              "
-              id="editTitleError"
-              class="text-danger"
-            >
-              Title is required.
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="editDescription" class="form-label">Description</label>
-            <textarea
-              class="form-control"
-              id="editDescription"
-              name="description"
-              [(ngModel)]="editTodoData.description"
-              required
-              #editDescription="ngModel"
-              [attr.aria-invalid]="
-                editDescription.invalid &&
-                (editDescription.dirty || editDescription.touched)
-                  ? 'true'
-                  : 'false'
-              "
-              aria-describedby="editDescriptionError"
-            ></textarea>
-            <div
-              *ngIf="
-                editDescription.invalid &&
-                (editDescription.dirty || editDescription.touched)
-              "
-              id="editDescriptionError"
-              class="text-danger"
-            >
-              Description is required.
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editStatus" class="form-label">Status</label>
-              <select
-                class="form-select"
-                id="editStatus"
-                name="status"
-                [(ngModel)]="editTodoData.status"
-                required
-                #editStatus="ngModel"
-                [attr.aria-invalid]="
-                  editStatus.invalid && (editStatus.dirty || editStatus.touched)
-                    ? 'true'
-                    : 'false'
-                "
-                aria-describedby="editStatusError"
-              >
-                <option value="PENDING">Pending</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div
-                *ngIf="
-                  editStatus.invalid && (editStatus.dirty || editStatus.touched)
-                "
-                id="editStatusError"
-                class="text-danger"
-              >
-                Status is required.
-              </div>
-              <label for="editRemarks" class="form-label"
-                >Remarks (Optional)</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="editRemarks"
-                name="remarks"
-                [(ngModel)]="editTodoData.remarks"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editDateStart" class="form-label">Start Date</label>
-              <input
-                type="date"
-                class="form-control"
-                id="editDateStart"
-                name="dateStart"
-                [(ngModel)]="editTodoData.dateStart"
-                required
-                #editDateStart="ngModel"
-                [attr.aria-invalid]="
-                  editDateStart.invalid &&
-                  (editDateStart.dirty || editDateStart.touched)
-                    ? 'true'
-                    : 'false'
-                "
-                aria-describedby="editDateStartError"
-              />
-              <div
-                *ngIf="
-                  editDateStart.invalid &&
-                  (editDateStart.dirty || editDateStart.touched)
-                "
-                id="editDateStartError"
-                class="text-danger"
-              >
-                Start Date is required.
-              </div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editDateEnd" class="form-label">End Date</label>
-              <input
-                type="date"
-                class="form-control"
-                id="editDateEnd"
-                name="dateEnd"
-                [(ngModel)]="editTodoData.dateEnd"
-                required
-                #editDateEnd="ngModel"
-                [attr.aria-invalid]="
-                  editDateEnd.invalid &&
-                  (editDateEnd.dirty || editDateEnd.touched)
-                    ? 'true'
-                    : 'false'
-                "
-                aria-describedby="editDateEndError"
-              />
-              <div
-                *ngIf="
-                  editDateEnd.invalid &&
-                  (editDateEnd.dirty || editDateEnd.touched)
-                "
-                id="editDateEndError"
-                class="text-danger"
-              >
-                End Date is required.
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
+    <div
+      class="modal fade"
+      id="editTodoModal"
+      tabindex="-1"
+      aria-labelledby="editTodoModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editTodoModalLabel">Edit Todo</h5>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn-close"
               data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="editTodoForm.invalid"
-            >
-              Save Changes
-            </button>
+              aria-label="Close"
+            ></button>
           </div>
-        </form>
+          <div class="modal-body" *ngIf="editTodoData">
+            <form
+              (ngSubmit)="onUpdateTodo(editTodoForm)"
+              #editTodoForm="ngForm"
+            >
+              <input type="hidden" name="id" [(ngModel)]="editTodoData.id" />
+
+              <div class="mb-3">
+                <label for="editTitle" class="form-label">Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editTitle"
+                  name="title"
+                  [(ngModel)]="editTodoData.title"
+                  required
+                  #editTitle="ngModel"
+                  [attr.aria-invalid]="
+                    editTitle.invalid && (editTitle.dirty || editTitle.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="editTitleError"
+                />
+                <div
+                  *ngIf="
+                    editTitle.invalid && (editTitle.dirty || editTitle.touched)
+                  "
+                  id="editTitleError"
+                  class="text-danger"
+                >
+                  Title is required.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="editDescription" class="form-label"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="editDescription"
+                  name="description"
+                  [(ngModel)]="editTodoData.description"
+                  required
+                  #editDescription="ngModel"
+                  [attr.aria-invalid]="
+                    editDescription.invalid &&
+                    (editDescription.dirty || editDescription.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="editDescriptionError"
+                ></textarea>
+                <div
+                  *ngIf="
+                    editDescription.invalid &&
+                    (editDescription.dirty || editDescription.touched)
+                  "
+                  id="editDescriptionError"
+                  class="text-danger"
+                >
+                  Description is required.
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="editStatus" class="form-label">Status</label>
+                  <select
+                    class="form-select"
+                    id="editStatus"
+                    name="status"
+                    [(ngModel)]="editTodoData.status"
+                    required
+                    #editStatus="ngModel"
+                    [attr.aria-invalid]="
+                      editStatus.invalid &&
+                      (editStatus.dirty || editStatus.touched)
+                        ? 'true'
+                        : 'false'
+                    "
+                    aria-describedby="editStatusError"
+                  >
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div
+                    *ngIf="
+                      editStatus.invalid &&
+                      (editStatus.dirty || editStatus.touched)
+                    "
+                    id="editStatusError"
+                    class="text-danger"
+                  >
+                    Status is required.
+                  </div>
+                  <label for="editRemarks" class="form-label"
+                    >Remarks (Optional)</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="editRemarks"
+                    name="remarks"
+                    [(ngModel)]="editTodoData.remarks"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="editDateStart" class="form-label"
+                    >Start Date</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="editDateStart"
+                    name="dateStart"
+                    [(ngModel)]="editTodoData.dateStart"
+                    required
+                    #editDateStart="ngModel"
+                    [attr.aria-invalid]="
+                      editDateStart.invalid &&
+                      (editDateStart.dirty || editDateStart.touched)
+                        ? 'true'
+                        : 'false'
+                    "
+                    aria-describedby="editDateStartError"
+                  />
+                  <div
+                    *ngIf="
+                      editDateStart.invalid &&
+                      (editDateStart.dirty || editDateStart.touched)
+                    "
+                    id="editDateStartError"
+                    class="text-danger"
+                  >
+                    Start Date is required.
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="editDateEnd" class="form-label">End Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="editDateEnd"
+                    name="dateEnd"
+                    [(ngModel)]="editTodoData.dateEnd"
+                    required
+                    #editDateEnd="ngModel"
+                    [attr.aria-invalid]="
+                      editDateEnd.invalid &&
+                      (editDateEnd.dirty || editDateEnd.touched)
+                        ? 'true'
+                        : 'false'
+                    "
+                    aria-describedby="editDateEndError"
+                  />
+                  <div
+                    *ngIf="
+                      editDateEnd.invalid &&
+                      (editDateEnd.dirty || editDateEnd.touched)
+                    "
+                    id="editDateEndError"
+                    class="text-danger"
+                  >
+                    End Date is required.
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="editTodoForm.invalid"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>

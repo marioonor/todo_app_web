@@ -1,0 +1,10 @@
+.header-image {
+  height: 45px;
+  width: 45px;
+  border-radius: 5px;
+}
+
+.text-primary {
+    --bs-text-opacity: 1;
+    color: white !important;
+}

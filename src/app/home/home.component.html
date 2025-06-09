@@ -1,12 +1,54 @@
-<div class="container text-center mt-5" style="height: 85vh; align-items: center; justify-content: center; display: flex; flex-direction: column;">
-  <img [src]="imagePath" alt="Dynamic Logo" class="logo" />
-  <div class="mb-4">
-    <p class="text-muted">Build your progress, one task at a time.</p>
+<div
+  class="home-container"
+  style="display: flex; flex-direction: row; align-items: center"
+>
+  <div
+    style="
+      background-color: #0b0f51;
+      height: 100vh;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <!-- <img [src]="todoimagePath" style="width: 200px; height: 200px; transform: rotate(-20deg); position: absolute; left: 14%; top: 40%;" alt=""> -->
+    <img [src]="imageanimatedPath" style="width: 300px; transform: rotate(20deg); height: 300px; z-index: 1; left: 37%;" alt="" />
   </div>
-  <div class="home-links">
-    <h3>
-      <a class="btn btn-outline-primary px-4" style="width: 200px;" (click)="goToRegister()">Register</a>
-    </h3>
-    <h3><a class="btn btn-primary px-4" style="width: 200px;" (click)="goToLogin()">Login</a></h3>
+  <!--------------------------------------------------->
+  <div
+    class="container text-center mt-5"
+    style="
+      height: 85vh;
+      width: 50%;
+      align-items: center;
+      justify-content: center;
+      display: flex;
+      flex-direction: column;
+    "
+  >
+    <img [src]="imagePath" alt="Dynamic Logo" class="logo" />
+    <div class="mb-4">
+      <p class="text-muted">Build your progress, one task at a time.</p>
+    </div>
+    <div class="home-links">
+      <h3>
+        <a
+          class="btn btn-outline-primary px-4"
+          style="width: 200px"
+          (click)="goToRegister()"
+          >Register</a
+        >
+      </h3>
+      <h3>
+        <a
+          class="btn btn-primary px-4"
+          style="width: 200px"
+          (click)="goToLogin()"
+          >Login</a
+        >
+      </h3>
+    </div>
   </div>
 </div>

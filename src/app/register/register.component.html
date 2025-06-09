@@ -1,103 +1,163 @@
-<div class="container text-center">
-  <div style="margin-top: 40px"><h1>Register User</h1></div>
-  <form
-    style="max-width: 600px; margin: 0 auto"
-    (ngSubmit)="onRegister()"
-    #registerForm="ngForm"
+<div
+  class="home-container"
+  style="display: flex; flex-direction: row; align-items: center"
+>
+  <div
+    style="
+      background-color: #0b0f51;
+      height: 100vh;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    "
   >
-    <div class="m-3">
-      <div class="form-group row" style="padding: 5px">
-        <label class="col-form-label col-4" for="username">User Name:</label>
-        <div class="col-8">
-          <input
-            class="form-control"
-            type="text"
-            id="username"
-            name="username"
-            [(ngModel)]="username"
-            required
-          />
-        </div>
-      </div>
-      <div class="form-group row" style="padding: 5px">
-        <label class="col-form-label col-4" for="email">Email:</label>
-        <div class="col-8">
-          <input
-            class="form-control"
-            type="email"
-            id="email"
-            name="email"
-            [(ngModel)]="email"
-            required
-          />
-        </div>
-      </div>
-      <div class="form-group row" style="padding: 5px">
-        <label class="col-form-label col-4" for="password">Password:</label>
-        <div class="col-8">
-          <div class="input-group">
-            <input
-              class="form-control"
-              [type]="showpassword ? 'text' : 'password'"
-              id="password"
-              name="password"
-              [(ngModel)]="password"
-              required
-            />
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              style="border: 0cap"
-              (click)="togglePassword()"
-            >
-              <i [class]="showpassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group row" style="padding: 5px">
-        <label class="col-form-label col-4" for="firstName">First Name:</label>
-        <div class="col-8">
-          <input
-            class="form-control"
-            type="text"
-            minlength="2"
-            maxlength="20"
-            id="firstName"
-            name="firstName"
-            [(ngModel)]="firstName"
-            required
-          />
-        </div>
-      </div>
-      <div class="form-group row" style="padding: 5px">
-        <label class="col-form-label col-4" for="lastName">Last Name:</label>
-        <div class="col-8">
-          <input
-            class="form-control"
-            type="text"
-            minlength="2"
-            maxlength="20"
-            id="lastName"
-            name="lastName"
-            [(ngModel)]="lastName"
-            required
-          />
-        </div>
-      </div>
-      <div class="m-3">
-        <button
-          type="submit"
-          [disabled]="!registerForm.form.valid"
-          class="btn btn-primary"
-        >
-          Sign Up
-        </button>
+    <img
+      [src]="imageanimatedPath"
+      style="
+        width: 300px;
+        transform: rotate(20deg);
+        height: 300px;
+        z-index: 1;
+        left: 37%;
+      "
+      alt=""
+    />
+  </div>
+  <!---------------------------------------------------->
+  <div class="container text-center" style="width: 50%">
+    <div
+      class="container text-center mt-5"
+      style="
+        width: 50%;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+      "
+    >
+      <img
+        [src]="imagePath"
+        alt="Dynamic Logo"
+        class="logo"
+        style="width: 200px; height: 200px"
+        role="button"
+        cursor="pointer"
+        (click)="goToHome()"
+      />
+      <div class="mb-4">
+        <p class="text-muted">Build your progress, one task at a time.</p>
       </div>
     </div>
-  </form>
-  <div class="m-3">
-    <p>Already have an account? <a routerLink="/login">Login</a></p>
+    <form
+      style="max-width: 600px; margin: 0 auto"
+      (ngSubmit)="onRegister()"
+      #registerForm="ngForm"
+    >
+      <div class="m-3" >
+        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+          <!-- <label class="col-form-label col-4" for="username">User Name:</label> -->
+          <div class="col-8">
+            <input
+              class="form-control"
+              type="text"
+              id="username"
+              name="username"
+              placeholder="User Name"
+              [(ngModel)]="username"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+          <!-- <label class="col-form-label col-4" for="email">Email:</label> -->
+          <div class="col-8">
+            <input
+              class="form-control"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Email"
+              [(ngModel)]="email"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+          <!-- <label class="col-form-label col-4" for="password">Password:</label> -->
+          <div class="col-8">
+            <div class="input-group" style="border: rgb(226, 226, 226) 1px solid; border-radius: 5px">
+              <input
+                class="form-control"
+                [type]="showpassword ? 'text' : 'password'"
+                id="password"
+                name="password"
+                placeholder="Password"
+                [(ngModel)]="password"
+                required
+                style="border: 0;"
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                style="border: 0cap"
+                (click)="togglePassword()"
+              >
+                <i [class]="showpassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+          <!-- <label class="col-form-label col-4" for="firstName"
+            >First Name:</label
+          > -->
+          <div class="col-8">
+            <input
+              class="form-control"
+              type="text"
+              minlength="2"
+              maxlength="20"
+              id="firstName"
+              name="firstName"
+              placeholder="First Name"
+              [(ngModel)]="firstName"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+          <!-- <label class="col-form-label col-4" for="lastName">Last Name:</label> -->
+          <div class="col-8">
+            <input
+              class="form-control"
+              type="text"
+              minlength="2"
+              maxlength="20"
+              id="lastName"
+              name="lastName"
+              placeholder="Last Name"
+              [(ngModel)]="lastName"
+              required
+            />
+          </div>
+        </div>
+        <div class="m-3" style="text-align: center">
+          <button
+            type="submit"
+            [disabled]="!registerForm.form.valid"
+            class="btn btn-primary"
+            style="width: 200px"
+          >
+            Sign Up
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="m-3">
+      <p>Already have an account? <a routerLink="/login">Login</a></p>
+    </div>
   </div>
 </div>

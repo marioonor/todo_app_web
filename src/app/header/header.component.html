@@ -1,0 +1,20 @@
+<div
+  class="header-container d-flex justify-content-between align-items-center"
+  style="background-color: #010e5b; height: 70px; padding: 0 20px"
+>
+  <img [src]="imagePath" alt="ToDo App Banner" class="header-image" />
+  <h4 class="mb-0">
+    <strong class="text-primary">{{ userFirstName }}</strong>
+  </h4>
+  <div class="d-flex align-items-center">
+    <img [src]="imageIconPath" alt="" class="header-image" />
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="logout()"
+      style="border: 0;"
+    >
+      <img [src]="imageLogoutPath" alt="" class="header-image" style="width: 30px; height: 30px;" />
+    </button>
+  </div>
+</div>

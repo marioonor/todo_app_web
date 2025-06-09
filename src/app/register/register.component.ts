@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
@@ -22,7 +22,7 @@ interface UserResponse {
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule, RouterLink, RouterModule],
   standalone: true,
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
@@ -35,7 +35,11 @@ export class RegisterComponent {
   lastName: string = '';
   showpassword: boolean = false;
 
-  private apiUrl = 'http://localhost:8080/auth/register';
+  imagePath: string = 'assets/images/image.png';
+  imageanimatedPath: string = 'assets/images/homelogo.gif';
+
+  // private apiUrl = 'http://34.238.44.249:8080/auth/register';
+  private apiUrl = 'http://localhost:8080/auth/register'; 
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -87,5 +91,9 @@ export class RegisterComponent {
         alert(errorMessage);
       },
     });
+  }
+
+  goToHome() {
+    this.router.navigate(['/home']);
   }
 }
