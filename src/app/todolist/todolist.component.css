@@ -1,7 +1,5 @@
 * {
   box-sizing: border-box;
-  /* margin: 0;
-  padding: 0; */
   font-family: Arial, sans-serif;
 }
 
@@ -71,8 +69,8 @@
 
 .nav-item.hover:hover {
   background-color: #2a8fb4;
-  margin: 5px;
-  padding: 5px 7px;
+  /* margin-top: 5px; */
+  /* padding: 2px 4px; */
 }
 
 .nav-item.hover:hover img {

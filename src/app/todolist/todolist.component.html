@@ -1,7 +1,10 @@
 <app-header></app-header>
 <div style="display: flex; flex-direction: row; width: 100%; top: 0">
   <app-sidebar></app-sidebar>
-  <div class="container-fluid" style="background-color: #6aa7e4; height: 90vh">
+  <div
+    class="container-fluid"
+    style="background-color: #6aa7e4; height: 95vh; padding-top: 10px"
+  >
     <div class="row">
       <div class="col-12"></div>
     </div>
@@ -39,6 +42,7 @@
             text-align: center;
             margin-right: 20px;
             cursor: pointer;
+            padding: 5px;
           "
         >
           Add Task
@@ -171,6 +175,7 @@
       style="
         margin-left: 10px;
         margin-right: 10px;
+        margin-bottom: 10px;
         overflow-y: auto;
         max-height: 83vh;
         border-radius: 10px;
@@ -281,7 +286,10 @@
     aria-hidden="true"
   >
     <div class="modal-dialog modal-lg">
-      <div class="modal-content" style="padding: 30px; background-color: #79b6f2; color: white;">
+      <div
+        class="modal-content"
+        style="padding: 30px; background-color: #79b6f2; color: white"
+      >
         <div class="modal-header">
           <img
             [src]="imageAddTask"
@@ -340,18 +348,110 @@
                 "
                 aria-describedby="addDescriptionError"
               ></textarea>
-              <!-- <div
-                *ngIf="
-                  description.invalid &&
-                  (description.dirty || description.touched)
-                "
-                id="addDescriptionError"
-                class="text-danger"
-              >
-                Description is required.
-              </div> -->
             </div>
             <div class="row">
+              <!-- Project Name Location -->
+              <div class="col-md-6 mb-3">
+                <label for="addStatus" class="form-label"
+                  >Project Name (For addition to database field)</label
+                >
+                <select class="form-select" id="addStatus" name="status">
+                  <option value="PROJECT1">Project 1</option>
+                  <option value="PROJECT2">Project 2</option>
+                  <option value="PROJECT3">Project 3</option>
+                  <option value="PROJECT4">Project 4</option>
+                </select>
+              </div>
+              <!-- Project Name Location -->
+              <div class="col-md-6 mb-3">
+                <div
+                  *ngIf="status.invalid && (status.dirty || status.touched)"
+                  id="addStatusError"
+                  class="text-danger"
+                >
+                  Status is required.
+                </div>
+                <label for="addRemarks" class="form-label"
+                  >Remarks (Optional)</label
+                >
+                <!-- <input
+                  type="text"
+                  class="form-control"
+                  id="addRemarks"
+                  name="remarks"
+                  [(ngModel)]="newTodo.remarks"
+                /> -->
+                <textarea
+                  class="form-control"
+                  id="addRemarks"
+                  name="remarks"
+                  [(ngModel)]="newTodo.remarks"
+                  #description="ngModel"
+                ></textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="addDateStart" class="form-label">Start Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="addDateStart"
+                  name="dateStart"
+                  [(ngModel)]="newTodo.dateStart"
+                  #dateStart="ngModel"
+                  [attr.aria-invalid]="
+                    dateStart.invalid && (dateStart.dirty || dateStart.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="addDateStartError"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="addDateEnd" class="form-label"
+                  >Target End Date</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  id="addDateEnd"
+                  name="dateEnd"
+                  [(ngModel)]="newTodo.dateEnd"
+                  #dateEnd="ngModel"
+                  [attr.aria-invalid]="
+                    dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="addDateEndError"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <!-- Added field (Start)-->
+              <div class="col-md-6 mb-3">
+                <label for="addDateEnd" class="form-label"
+                  >Due Date (For addition to database field)</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  id="addDateEnd"
+                  name="dateEnd"
+                  [(ngModel)]="newTodo.dateEnd"
+                  #dateEnd="ngModel"
+                  [attr.aria-invalid]="
+                    dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="addDateEndError"
+                />
+              </div>
+              <!-- Added field (End)-->
+              <!-- Project Name Location -->
+              <!-- Added field (Start)-->
               <div class="col-md-6 mb-3">
                 <label for="addStatus" class="form-label">Status</label>
                 <select
@@ -374,78 +474,41 @@
                   <option value="CANCELLED">Cancelled</option>
                 </select>
               </div>
-              <div class="col-md-6 mb-3">
-                <div
-                  *ngIf="status.invalid && (status.dirty || status.touched)"
-                  id="addStatusError"
-                  class="text-danger"
-                >
-                  Status is required.
-                </div>
-                <label for="addRemarks" class="form-label"
-                  >Remarks (Optional)</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="addRemarks"
-                  name="remarks"
-                  [(ngModel)]="newTodo.remarks"
-                />
-              </div>
             </div>
+            <!-- Added field (End)-->
+            <!-- Priority Field and Subtasks Field -->
+            <!-- Priority Field -->
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="addDateStart" class="form-label">Start Date</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="addDateStart"
-                  name="dateStart"
-                  [(ngModel)]="newTodo.dateStart"
-                  #dateStart="ngModel"
-                  [attr.aria-invalid]="
-                    dateStart.invalid && (dateStart.dirty || dateStart.touched)
-                      ? 'true'
-                      : 'false'
-                  "
-                  aria-describedby="addDateStartError"
-                />
-                <!-- <div
-                  *ngIf="
-                    dateStart.invalid && (dateStart.dirty || dateStart.touched)
-                  "
-                  id="addDateStartError"
-                  class="text-danger"
-                >
-                  Start Date is required.
-                </div> -->
+                <label for="addPriority" class="form-label"></label>
+                Priority (For addition to database field)
+                <select class="form-select" id="addPriority" name="status">
+                  <option value="PRIORITY1">Critical/Urgent/High</option>
+                  <option value="PRIORITY2">Important/High Priority</option>
+                  <option value="PRIORITY3">Normal/Medium Priority</option>
+                  <option value="PRIORITY4">Low Priority</option>
+                </select>
               </div>
+              <!-- Subtasks Field -->
               <div class="col-md-6 mb-3">
-                <label for="addDateEnd" class="form-label">End Date</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="addDateEnd"
-                  name="dateEnd"
-                  [(ngModel)]="newTodo.dateEnd"
-                  #dateEnd="ngModel"
-                  [attr.aria-invalid]="
-                    dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)
-                      ? 'true'
-                      : 'false'
-                  "
-                  aria-describedby="addDateEndError"
-                />
-                <!-- <div
-                  *ngIf="dateEnd.invalid && (dateEnd.dirty || dateEnd.touched)"
-                  id="addDateEndError"
-                  class="text-danger"
-                >
-                  End Date is required.
-                </div> -->
+                <label for="">Add Subtasks: (For addition to database field)</label>
+                <ul class="list-unstyled" style="display: flex; flex-direction: column; gap: 5px">
+                  <li>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Subtask 1"
+                      name="subtask1"
+                    />
+                </li>
+                  <li><input type="checkbox" name="tasks1" /> Task 1</li>
+                  <li><input type="checkbox" name="tasks2" /> Task 2</li>
+                  <li><input type="checkbox" name="tasks3" /> Task 3</li>
+                  <li><input type="checkbox" name="tasks4" /> Task 4</li>
+                </ul>
               </div>
             </div>
+            <!-- Priority Fields and Subtasks Field -->
             <div class="modal-footer">
               <button
                 type="button"
@@ -476,7 +539,10 @@
     aria-hidden="true"
   >
     <div class="modal-dialog modal-lg">
-      <div class="modal-content" style="padding: 30px; background-color: #79b6f2; color: white;">
+      <div
+        class="modal-content"
+        style="padding: 30px; background-color: #79b6f2; color: white"
+      >
         <div class="modal-header">
           <img
             [src]="imageAddTask"
