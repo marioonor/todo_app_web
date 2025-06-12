@@ -19,14 +19,14 @@ export class TodoService {
       catchError(this.handleError)
     );
   }
-
+//-------------------------------------------------------
   addTodo(todo: Omit<Todo, 'id'>): Observable<Todo> {
     return this.http.post<Todo>(this.todoApiUrl, todo).pipe(
       tap((newTodo) => console.log('Added todo:', newTodo)),
       catchError(this.handleError)
     );
   }
-
+//-------------------------------------------------------
   updateTodo(id: number, todo: Todo): Observable<Todo> {
     return this.http.put<Todo>(`${this.todoApiUrl}/${id}`, todo).pipe(
       tap((updatedTodo) => console.log('Updated todo:', updatedTodo)),
@@ -39,6 +39,11 @@ export class TodoService {
       tap(() => console.log(`Deleted todo with id=${id}`)),
       catchError(this.handleError)
     );
+  }
+
+  updateTodoStatus(id: number, newStatus: TodoStatus): Observable<boolean> {
+    console.log(`Updated Todo ID ${id} to ${newStatus}`);
+    return of(true);
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -55,10 +60,5 @@ export class TodoService {
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
-  }
-
-  updateTodoStatus(id: number, newStatus: TodoStatus): Observable<boolean> {
-    console.log(`Updated Todo ID ${id} to ${newStatus}`);
-    return of(true);
   }
 }

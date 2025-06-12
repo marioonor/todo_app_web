@@ -32,6 +32,9 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 export class TodolistComponent implements OnInit, OnDestroy {
   imagePath: string = 'assets/images/image.png';
   imageAddTask: string = 'assets/images/addtask.png';
+  edit: string = 'assets/images/edit.png';
+  delete: string = 'assets/images/delete.png';
+
   connectedLists: TodoStatus[] = [
     'PENDING',
     'IN_PROGRESS',

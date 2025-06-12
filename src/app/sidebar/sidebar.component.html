@@ -56,8 +56,16 @@
           All Projects
         </a>
       </li>
+      <div class="hide-scrollbar" style="overflow-x: auto; max-width: 100%; ">
+        <div *ngFor="let project of projects" class="project-item">
+          <li class="project-list-item">
+            <img [src]="allProjects" class="btn-success project-icon" alt="" />
+            {{ project.project }}
+          </li>
+        </div>
+      </div>
     </ul>
-    <div class="sidebar-header">
+    <div class="sidebar-header" style="margin-top: 20px">
       <h5>My Projects</h5>
     </div>
 
@@ -92,7 +100,10 @@
             ></button>
           </div>
           <div class="modal-body">
-            <form (ngSubmit)="onAddTodo(addTodoForm)" #addTodoForm="ngForm">
+            <form
+              (ngSubmit)="onAddProject(addProjectForm)"
+              #addProjectForm="ngForm"
+            >
               <div class="mb-3">
                 <label for="addTitle" class="form-label">Project Name</label>
                 <input
@@ -100,7 +111,7 @@
                   class="form-control"
                   id="addTitle"
                   name="title"
-                  [(ngModel)]="newTodo.title"
+                  [(ngModel)]="newProject.project"
                   required
                   #title="ngModel"
                   [attr.aria-invalid]="
@@ -130,7 +141,7 @@
                 <button
                   type="submit"
                   class="btn btn-primary"
-                  [disabled]="addTodoForm.invalid"
+                  [disabled]="addProjectForm.invalid"
                 >
                   Save Todo
                 </button>

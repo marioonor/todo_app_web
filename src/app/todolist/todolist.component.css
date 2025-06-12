@@ -95,3 +95,13 @@
     margin-top: 0 !important;
     width: 100%;
 }
+
+.hide-scrollbar {
+  overflow: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  
+}

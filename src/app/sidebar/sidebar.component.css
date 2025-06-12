@@ -37,3 +37,41 @@
   transition: background-color 0.3s ease;
 }
 
+.project-item {
+  padding-left: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.project-list-item {
+  text-align: left;
+  list-style-type: none;
+
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.project-item:hover .project-list-item {
+  color: #007bff; 
+}
+
+.project-icon {
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.hide-scrollbar {
+  overflow: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  
+}
+
+
