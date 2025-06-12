@@ -15,6 +15,8 @@ import {
 import { catchError } from 'rxjs/operators';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { Project } from '../models/project.models';
+import { ProjectService } from '../service/project.service';
 
 @Component({
   selector: 'app-todolist',
@@ -34,6 +36,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
   imageAddTask: string = 'assets/images/addtask.png';
   edit: string = 'assets/images/edit.png';
   delete: string = 'assets/images/delete.png';
+
+  projects: Project[] = [];
 
   connectedLists: TodoStatus[] = [
     'PENDING',
@@ -76,11 +80,13 @@ export class TodolistComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private todoService: TodoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private projectService: ProjectService
   ) {}
 
   ngOnInit(): void {
     this.loadTodos();
+    this.loadProjects();
     this.userAuthSubscription = this.authService.currentUser.subscribe(
       (user) => {
         if (user && user.firstName) {
@@ -117,6 +123,21 @@ export class TodolistComponent implements OnInit, OnDestroy {
         this.errorMessage = err.message || 'Could not load todos.';
         this.isLoading = false;
       },
+    });
+  }
+
+  loadProjects(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.projectService.getProjects().subscribe({
+      next: (data) => {
+        this.projects = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.message || 'Could not load projects.';
+        this.isLoading = false;
+      }
     });
   }
 
@@ -370,4 +391,5 @@ export class TodolistComponent implements OnInit, OnDestroy {
         return status;
     }
   }
+  
 }

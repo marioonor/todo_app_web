@@ -105,3 +105,11 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;  
 }
+
+.custom-search-bar {
+  max-width: 40%;
+  margin: auto;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}

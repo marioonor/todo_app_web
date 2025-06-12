@@ -3,11 +3,7 @@
   <app-sidebar></app-sidebar>
   <div
     class="container-fluid"
-    style="
-      background-color: #6aa7e4;
-      padding-top: 10px;
-      padding-bottom: 20px;
-    "
+    style="background-color: #6aa7e4; padding-top: 10px; padding-bottom: 20px"
   >
     <div class="row">
       <div class="col-12"></div>
@@ -36,6 +32,19 @@
             List View
           </div>
         </div>
+        <div class="input-group custom-search-bar mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search projects..."
+            aria-label="Search"
+          />
+          <button class="btn btn-primary" type="button">
+            <i class="bi bi-search"></i>
+            <!-- Bootstrap Icons -->
+          </button>
+        </div>
+
         <div
           class="nav-item mb-2 hover"
           data-bs-toggle="modal"
@@ -112,7 +121,7 @@
             <strong>{{ getStatusLabel(status) }}</strong>
           </div>
           <div
-            class="card-body d-flex flex-column gap-3"
+            class="card-body d-flex flex-column gap-3 hide-scrollbar"
             style="min-height: 400px; overflow-y: auto"
             cdkDropList
             [id]="status"
@@ -156,7 +165,11 @@
                       data-bs-target="#editTodoModal"
                       (click)="selectTodoForEdit(todo)"
                     >
-                    <img [src]="edit" style="width: auto; height: 20px;" alt="" />
+                      <img
+                        [src]="edit"
+                        style="width: auto; height: 20px"
+                        alt=""
+                      />
                     </button>
                     <button
                       type="button"
@@ -164,7 +177,11 @@
                       style="padding: 5px 10px"
                       (click)="deleteTodo(todo.id!)"
                     >
-                      <img [src]="delete" style="width: auto; height: 20px;" alt="" />
+                      <img
+                        [src]="delete"
+                        style="width: auto; height: 20px"
+                        alt=""
+                      />
                     </button>
                   </div>
                 </div>
@@ -276,7 +293,7 @@
                   data-bs-target="#editTodoModal"
                   style="padding: 5px 10px; margin: 5px"
                 >
-                  <img [src]="edit" style="width: auto; height: 20px;" alt="" />
+                  <img [src]="edit" style="width: auto; height: 20px" alt="" />
                 </button>
                 <button
                   type="button"
@@ -284,7 +301,11 @@
                   (click)="deleteTodo(todo.id!)"
                   style="padding: 5px 10px"
                 >
-                  <img [src]="delete" style="width: auto; height: 20px;" alt="" />
+                  <img
+                    [src]="delete"
+                    style="width: auto; height: 20px"
+                    alt=""
+                  />
                 </button>
               </td>
             </tr>
@@ -374,11 +395,17 @@
                 <label for="addStatus" class="form-label"
                   >Project Name (For addition to database field)</label
                 >
-                <select class="form-select" id="addStatus" name="status">
-                  <option value="PROJECT1">Project 1</option>
-                  <option value="PROJECT2">Project 2</option>
-                  <option value="PROJECT3">Project 3</option>
-                  <option value="PROJECT4">Project 4</option>
+                <select
+                  class="form-select"
+                  id="addStatus"
+                  name="status"
+                >
+                  <option
+                    *ngFor="let project of projects"
+                    [value]="project.project"
+                  >
+                    {{ project.project }}
+                  </option>
                 </select>
               </div>
               <!-- Project Name Location -->

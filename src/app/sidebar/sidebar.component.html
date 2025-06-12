@@ -45,7 +45,7 @@
           All Tasks
         </a>
       </li>
-      <li class="nav-item mb-2 hover" style="cursor: pointer">
+      <li class="nav-item mb-2">
         <a class="nav-link text-black" routerLink="/settings">
           <img
             [src]="allProjects"
@@ -56,11 +56,11 @@
           All Projects
         </a>
       </li>
-      <div class="hide-scrollbar" style="overflow-x: auto; max-width: 100%; ">
-        <div *ngFor="let project of projects" class="project-item">
+      <div class="hide-scrollbar" style=" border-radius: 5px; overflow-x: auto; overflow-y: auto; max-height: 200px; max-width: 100%; ">
+        <div *ngFor="let project of projects" class="project-item" >
           <li class="project-list-item">
             <img [src]="allProjects" class="btn-success project-icon" alt="" />
-            {{ project.project }}
+            {{ project.project }}  
           </li>
         </div>
       </div>
