@@ -6,7 +6,10 @@ export interface Todo {
   remarks?: string;
   dateStart: string | Date;
   dateEnd: string | Date;
-  order?: number;  
+  order?: number;
+  dueDate: string | Date;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  
 }
 
 export type TodoStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';

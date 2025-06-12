@@ -21,7 +21,13 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   templateUrl: './todolist.component.html',
   styleUrls: ['./todolist.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule, HeaderComponent, SidebarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DragDropModule,
+    HeaderComponent,
+    SidebarComponent,
+  ],
 })
 export class TodolistComponent implements OnInit, OnDestroy {
   imagePath: string = 'assets/images/image.png';
@@ -46,7 +52,11 @@ export class TodolistComponent implements OnInit, OnDestroy {
     remarks: '',
     dateStart: '',
     dateEnd: '',
+    dueDate: '',
+    priority: 'LOW',
   };
+
+  currentYear: number = new Date().getFullYear();
 
   todosByStatus: { [key in TodoStatus]: Todo[] } = {
     PENDING: [],
@@ -128,6 +138,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
           remarks: '',
           dateStart: '',
           dateEnd: '',
+          dueDate: '',
+          priority: 'LOW',
         };
         if (addTodoForm) {
           addTodoForm.resetForm({ status: 'PENDING' });
@@ -149,6 +161,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       ...todo,
       dateStart: this.formatDateForInput(todo.dateStart),
       dateEnd: this.formatDateForInput(todo.dateEnd),
+      dueDate: this.formatDateForInput(todo.dueDate),
     };
   }
 
@@ -266,7 +279,6 @@ export class TodolistComponent implements OnInit, OnDestroy {
       });
     }
   }
-
 
   private updateAndPersistOrder(list: Todo[]): Observable<any> {
     const updateObservables: Observable<Todo | null>[] = [];

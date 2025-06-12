@@ -6,35 +6,35 @@ import { Todo, TodoStatus } from '../models/todo.models';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TodoService {
   private todoApiUrl = `${environment.apiUrl}/api/todos`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getTodos(): Observable<Todo[]> {
     return this.http.get<Todo[]>(this.todoApiUrl).pipe(
-      tap(todos => console.log('Fetched todos:', todos)),
+      tap((todos) => console.log('Fetched todos:', todos)),
       catchError(this.handleError)
     );
   }
 
   addTodo(todo: Omit<Todo, 'id'>): Observable<Todo> {
     return this.http.post<Todo>(this.todoApiUrl, todo).pipe(
-      tap(newTodo => console.log('Added todo:', newTodo)),
+      tap((newTodo) => console.log('Added todo:', newTodo)),
       catchError(this.handleError)
     );
   }
 
   updateTodo(id: number, todo: Todo): Observable<Todo> {
     return this.http.put<Todo>(`${this.todoApiUrl}/${id}`, todo).pipe(
-      tap(updatedTodo => console.log('Updated todo:', updatedTodo)),
+      tap((updatedTodo) => console.log('Updated todo:', updatedTodo)),
       catchError(this.handleError)
     );
   }
 
-  deleteTodo(id: number): Observable<void> { 
+  deleteTodo(id: number): Observable<void> {
     return this.http.delete<void>(`${this.todoApiUrl}/${id}`).pipe(
       tap(() => console.log(`Deleted todo with id=${id}`)),
       catchError(this.handleError)
@@ -59,6 +59,6 @@ export class TodoService {
 
   updateTodoStatus(id: number, newStatus: TodoStatus): Observable<boolean> {
     console.log(`Updated Todo ID ${id} to ${newStatus}`);
-    return of(true); 
+    return of(true);
   }
 }

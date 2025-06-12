@@ -3,14 +3,14 @@
   font-family: Arial, sans-serif;
 }
 
-.header-container {
-  margin: 0 20px;
-}
-
 .header-image {
   height: 60px;
   width: 60px;
   border-radius: 5px;
+}
+
+.table {
+  margin-bottom: 0;
 }
 
 .add-todo-btn {
@@ -22,8 +22,6 @@
 
 .table-container {
   max-height: 450px;
-  overflow-y: auto;
-  overflow-x: auto;
   border: solid 1px rgb(213, 213, 213);
   border-radius: 10px;
   margin: 20px;
@@ -69,8 +67,6 @@
 
 .nav-item.hover:hover {
   background-color: #2a8fb4;
-  /* margin-top: 5px; */
-  /* padding: 2px 4px; */
 }
 
 .nav-item.hover:hover img {
@@ -83,3 +79,19 @@
   color: black; 
 }
 
+.sticky-header th {
+  position: sticky;
+  top: 0;
+  background-color: #343a40;
+  color: white;
+  z-index: 1;
+}
+
+.sticky-header th {
+  background-color: #0a6ac9;
+}
+
+.mt-4 {
+    margin-top: 0 !important;
+    width: 100%;
+}
