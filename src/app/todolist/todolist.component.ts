@@ -1,3 +1,4 @@
+import { SubtasksService } from './../service/subtasks.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TodoService } from '../service/todo.service';
@@ -17,6 +18,7 @@ import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Project } from '../models/project.models';
 import { ProjectService } from '../service/project.service';
+import { Subtasks } from '../models/subtasks.model';
 
 @Component({
   selector: 'app-todolist',
@@ -36,6 +38,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
   imageAddTask: string = 'assets/images/addtask.png';
   edit: string = 'assets/images/edit.png';
   delete: string = 'assets/images/delete.png';
+  add: string = 'assets/images/add.png';
+
 
   projects: Project[] = [];
 
@@ -45,6 +49,12 @@ export class TodolistComponent implements OnInit, OnDestroy {
     'COMPLETED',
     'CANCELLED',
   ];
+
+  isCollapsed = false;
+
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
 
   currentView: 'kanban' | 'simpleList' = 'kanban';
 
@@ -81,12 +91,14 @@ export class TodolistComponent implements OnInit, OnDestroy {
     private router: Router,
     private todoService: TodoService,
     private authService: AuthService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private subtasksService: SubtasksService
   ) {}
 
   ngOnInit(): void {
     this.loadTodos();
     this.loadProjects();
+    this.loadSubtasks();
     this.userAuthSubscription = this.authService.currentUser.subscribe(
       (user) => {
         if (user && user.firstName) {
@@ -137,7 +149,22 @@ export class TodolistComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.errorMessage = err.message || 'Could not load projects.';
         this.isLoading = false;
-      }
+      },
+    });
+  }
+
+  loadSubtasks(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.subtasksService.getSubtasks().subscribe({
+      next: (data) => {
+        this.subtasks = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.message || 'Could not load projects.';
+        this.isLoading = false;
+      },
     });
   }
 
@@ -177,6 +204,40 @@ export class TodolistComponent implements OnInit, OnDestroy {
         console.error('Failed to add todo:', error);
         alert(`Failed to add todo: ${error.message || 'Server error'}`);
       },
+    });
+  }
+
+  newTask: string = '';
+  subtasks: Subtasks[] = [];
+
+  addTaskOnEnter() {
+    const trimmedTask = this.newTask.trim();
+    console.log('Attempting to add:', trimmedTask); 
+
+    if (trimmedTask) {
+      const newSubtask: Omit<Subtasks, 'id'> = {
+        subtasks: trimmedTask,
+        completed: false,
+      };
+
+      this.subtasksService.addSubtask(newSubtask).subscribe({
+        next: (response) => {
+          console.log('Task saved:', response); 
+          this.subtasks.push(response);
+          this.newTask = '';
+        },
+        error: (err) => console.error('Failed to add task:', err),
+      });
+    } else {
+      console.warn('Task is empty!');
+    }
+  }
+
+  toggleComplete(subtask: Subtasks) {
+    const updatedSubtask = { ...subtask, completed: !subtask.completed };
+    this.subtasksService.updateSubtask(subtask.id, updatedSubtask).subscribe({
+      next: () => (subtask.completed = !subtask.completed),
+      error: (err) => console.error('Failed to update task:', err),
     });
   }
 
@@ -391,5 +452,4 @@ export class TodolistComponent implements OnInit, OnDestroy {
         return status;
     }
   }
-  
 }

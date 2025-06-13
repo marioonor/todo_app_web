@@ -4,7 +4,7 @@
 }
 
 #sidebar {
-  width: 250px;
+  width: 350px;
   transition: all 0.3s;
 }
 
@@ -25,10 +25,6 @@
   background-color: #e6f4ea; 
   border-radius: 8px;
   transition: background-color 0.3s ease;
-}
-
-.nav-item.hover:hover .nav-link {
-  color: #2e61d7; 
 }
 
 .nav-item.hover:hover img {
@@ -74,4 +70,31 @@
   display: none;  
 }
 
+.sidebar {
+  width: 400px;
+  background-color: #f8f9fa;
+  transition: width 0.3s ease;
+  border-right: 1px solid #ddd;
+}
 
+.sidebar-folded {
+  width: 47px;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+.btn-toggle {
+  margin: 5px;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.mt-3 {
+    margin-top: 0 !important;
+}
+
+.nav-link {
+  padding: 0;
+}

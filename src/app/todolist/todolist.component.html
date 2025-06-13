@@ -1,9 +1,17 @@
 <app-header></app-header>
-<div style="display: flex; flex-direction: row; width: 100%; top: 0">
+<div
+  class="hide-scrollbar"
+  style="display: flex; flex-direction: row; width: 100%; top: 0"
+>
   <app-sidebar></app-sidebar>
   <div
     class="container-fluid"
-    style="background-color: #6aa7e4; padding-top: 10px; padding-bottom: 20px"
+    style="
+      background-color: #6aa7e4;
+      padding-top: 10px;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    "
   >
     <div class="row">
       <div class="col-12"></div>
@@ -46,25 +54,14 @@
         </div>
 
         <div
-          class="nav-item mb-2 hover"
+          class="nav-item hover add-task-btn"
           data-bs-toggle="modal"
           data-bs-target="#addTodoModal"
           role="button"
-          style="
-            color: rgb(255, 255, 255);
-            text-align: center;
-            margin-right: 20px;
-            cursor: pointer;
-            padding: 5px;
-          "
         >
-          Add Task
-          <img
-            [src]="imageAddTask"
-            class="btn-success"
-            style="width: 40px; height: 40px; padding: 5px"
-            alt=""
-          />
+          <p class="add-task-text">Add Task</p>
+
+          <img [src]="imageAddTask" alt="Add Task" class="add-task-icon" />
         </div>
       </div>
       <!-- Display button selection -->
@@ -390,16 +387,12 @@
               ></textarea>
             </div>
             <div class="row">
-              <!-- Project Name Location -->
+              <!-- Project Name Location ---------------------------------------------------------------------------------->
               <div class="col-md-6 mb-3">
                 <label for="addStatus" class="form-label"
                   >Project Name (For addition to database field)</label
                 >
-                <select
-                  class="form-select"
-                  id="addStatus"
-                  name="status"
-                >
+                <select class="form-select" id="addStatus" name="status">
                   <option
                     *ngFor="let project of projects"
                     [value]="project.project"
@@ -408,7 +401,8 @@
                   </option>
                 </select>
               </div>
-              <!-- Project Name Location -->
+              <!-- Project Name Location ------------------------------------------------------------------------------------>
+
               <div class="col-md-6 mb-3">
                 <div
                   *ngIf="status.invalid && (status.dirty || status.touched)"
@@ -470,9 +464,7 @@
             <div class="row">
               <!-- Added field (Start)-->
               <div class="col-md-6 mb-3">
-                <label for="addDueDate" class="form-label"
-                  >Due Date (For addition to database field)</label
-                >
+                <label for="addDueDate" class="form-label">Due Date</label>
                 <input
                   type="date"
                   class="form-control"
@@ -520,18 +512,56 @@
                   class="list-unstyled"
                   style="display: flex; flex-direction: column; gap: 5px"
                 >
+                  <!-- Input for new task -->
                   <li>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Subtask 1"
-                      name="subtask1"
-                    />
+                    <div class="input-group mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="subtaskInput"
+                        name="subtaskInput"
+                        [(ngModel)]="newTask"
+                        (keydown.enter)="
+                          addTaskOnEnter(); $event.preventDefault()
+                        "
+                      />
+
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        (click)="addTaskOnEnter()"
+                      >
+                        <img
+                        [src]="add"
+                        style="width: auto; height: 20px"
+                        alt=""
+                      />
+                      </button>
+                    </div>
                   </li>
-                  <li><input type="checkbox" name="tasks1" /> Task 1</li>
-                  <li><input type="checkbox" name="tasks2" /> Task 2</li>
-                  <li><input type="checkbox" name="tasks3" /> Task 3</li>
-                  <li><input type="checkbox" name="tasks4" /> Task 4</li>
+
+                  <!-- Subtask list -->
+                  <div>
+                    <label class="form-label">Subtasks:</label>
+                    <ul class="list-unstyled">
+                      <li *ngFor="let subtask of subtasks">
+                        <input
+                          type="checkbox"
+                          [checked]="subtask.completed"
+                          (change)="toggleComplete(subtask)"
+                        />
+                        <span
+                          [ngClass]="{
+                            'text-decoration-line-through': subtask.completed
+                          }"
+                        >
+                          {{ subtask.subtasks }}
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Added field (End)----------------------------------------------------------------------->
                 </ul>
               </div>
               <!-- Priority Field -->
@@ -662,26 +692,20 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="editStatus" class="form-label">Status</label>
+                <label for="editProjectName" class="form-label">
+                  Project Name (For addition to database field)
+                </label>
                 <select
                   class="form-select"
-                  id="editStatus"
-                  name="status"
-                  [(ngModel)]="editTodoData.status"
-                  required
-                  #editStatus="ngModel"
-                  [attr.aria-invalid]="
-                    editStatus.invalid &&
-                    (editStatus.dirty || editStatus.touched)
-                      ? 'true'
-                      : 'false'
-                  "
-                  aria-describedby="editStatusError"
+                  id="editProjectName"
+                  name="projectName"
                 >
-                  <option value="PENDING">Pending</option>
-                  <option value="IN_PROGRESS">In Progress</option>
-                  <option value="COMPLETED">Completed</option>
-                  <option value="CANCELLED">Cancelled</option>
+                  <option
+                    *ngFor="let project of projects"
+                    [value]="project.project"
+                  >
+                    {{ project.project }}
+                  </option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
@@ -716,7 +740,6 @@
                   id="editDateStart"
                   name="dateStart"
                   [(ngModel)]="editTodoData.dateStart"
-                  required
                   #editDateStart="ngModel"
                   [attr.aria-invalid]="
                     editDateStart.invalid &&
@@ -726,16 +749,6 @@
                   "
                   aria-describedby="editDateStartError"
                 />
-                <div
-                  *ngIf="
-                    editDateStart.invalid &&
-                    (editDateStart.dirty || editDateStart.touched)
-                  "
-                  id="editDateStartError"
-                  class="text-danger"
-                >
-                  Start Date is required.
-                </div>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="editDateEnd" class="form-label">End Date</label>
@@ -745,7 +758,6 @@
                   id="editDateEnd"
                   name="dateEnd"
                   [(ngModel)]="editTodoData.dateEnd"
-                  required
                   #editDateEnd="ngModel"
                   [attr.aria-invalid]="
                     editDateEnd.invalid &&
@@ -755,16 +767,123 @@
                   "
                   aria-describedby="editDateEndError"
                 />
-                <div
-                  *ngIf="
-                    editDateEnd.invalid &&
-                    (editDateEnd.dirty || editDateEnd.touched)
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="editDueDate" class="form-label">Due Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="addDueDate"
+                  name="dueDate"
+                  [(ngModel)]="editTodoData.dueDate"
+                  #editDueDate="ngModel"
+                  [attr.aria-invalid]="
+                    editDueDate.invalid &&
+                    (editDueDate.dirty || editDueDate.touched)
+                      ? 'true'
+                      : 'false'
                   "
-                  id="editDateEndError"
-                  class="text-danger"
+                  aria-describedby="editDateEndError"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="editStatus" class="form-label">Status</label>
+                <select
+                  class="form-select"
+                  id="editStatus"
+                  name="status"
+                  [(ngModel)]="editTodoData.status"
+                  required
+                  #editStatus="ngModel"
+                  [attr.aria-invalid]="
+                    editStatus.invalid &&
+                    (editStatus.dirty || editStatus.touched)
+                      ? 'true'
+                      : 'false'
+                  "
+                  aria-describedby="editStatusError"
                 >
-                  End Date is required.
-                </div>
+                  <option value="PENDING">Pending</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for=""
+                  >Add Subtasks: (For addition to database field)</label
+                >
+                <ul
+                  class="list-unstyled"
+                  style="display: flex; flex-direction: column; gap: 5px"
+                >
+                  <!-- Input for new task -->
+                  <li>
+                    <div class="input-group mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="subtaskInput"
+                        name="subtaskInput"
+                        [(ngModel)]="newTask"
+                        (keydown.enter)="
+                          addTaskOnEnter(); $event.preventDefault()
+                        "
+                      />
+
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        (click)="addTaskOnEnter()"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </li>
+
+                  <!-- Subtask list -->
+                  <div>
+                    <label class="form-label">Subtasks:</label>
+                    <ul class="list-unstyled">
+                      <li *ngFor="let subtask of subtasks">
+                        <input
+                          type="checkbox"
+                          [checked]="subtask.completed"
+                          (change)="toggleComplete(subtask)"
+                        />
+                        <span
+                          [ngClass]="{
+                            'text-decoration-line-through': subtask.completed
+                          }"
+                        >
+                          {{ subtask.subtasks }}
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Added field (End)----------------------------------------------------------------------->
+                </ul>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="editPriority" class="form-label">
+                  Priority (For addition to database field)
+                </label>
+                <select
+                  class="form-select"
+                  id="editPriority"
+                  name="priority"
+                  [(ngModel)]="editTodoData.priority"
+                >
+                  <option value="PRIORITY1">Critical/Urgent/High</option>
+                  <option value="PRIORITY2">Important/High Priority</option>
+                  <option value="PRIORITY3">Normal/Medium Priority</option>
+                  <option value="PRIORITY4">Low Priority</option>
+                </select>
               </div>
             </div>
             <div class="modal-footer">

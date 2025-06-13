@@ -1,5 +1,12 @@
-<div class="d-flex" style="background-color: #dbe3eb; height: 100%">
+<div
+  class="d-flex"
+  style="background-color: #0d6efd; height: 100%"
+  [ngClass]="{ 'sidebar-folded': isCollapsed, sidebar: true }"
+>
   <!-- Sidebar -->
+  <button class="btn btn-toggle" style="height: 45px" (click)="toggleSidebar()">
+    ☰
+  </button>
   <nav id="sidebar" class="bg-dark text-black p-3">
     <div class="sidebar-header">
       <h3>Projects</h3>
@@ -23,7 +30,7 @@
           Create New Project
         </a>
       </li>
-      <li class="nav-item mb-2 hover" style="cursor: pointer">
+      <li>
         <a class="nav-link text-black" routerLink="/profile">
           <img
             [src]="imageAddTask"
@@ -34,6 +41,14 @@
           Project Name
         </a>
       </li>
+      <div style="border-radius: 5px; margin-left: 30px;">
+        <div class="mt-3 border hide-scrollbar" style="width: 290px;">
+          <div class="mt-3 border text-nowrap" *ngIf="selectedProject">
+            <img [src]="allProjects" class="btn-success project-icon" alt="" />
+            {{ selectedProject }}
+          </div>
+        </div>
+      </div>
       <li class="nav-item mb-2 hover" style="cursor: pointer">
         <a class="nav-link text-black" routerLink="/settings">
           <img
@@ -56,11 +71,24 @@
           All Projects
         </a>
       </li>
-      <div class="hide-scrollbar" style=" border-radius: 5px; overflow-x: auto; overflow-y: auto; max-height: 200px; max-width: 100%; ">
-        <div *ngFor="let project of projects" class="project-item" >
+      <div
+        class="hide-scrollbar"
+        style="
+          border-radius: 5px;
+          overflow-x: auto;
+          overflow-y: auto;
+          max-height: 250px;
+          max-width: 100%;
+        "
+      >
+        <div
+          *ngFor="let project of projects"
+          class="project-item"
+          (click)="selectProject(project.project)"
+        >
           <li class="project-list-item">
             <img [src]="allProjects" class="btn-success project-icon" alt="" />
-            {{ project.project }}  
+            {{ project.project }}
           </li>
         </div>
       </div>

@@ -27,6 +27,15 @@ export class SidebarComponent {
     this.loadProjects();
   }
 
+  isCollapsed = false;
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
+
+  selectedProject: string | null = null;
+  selectProject(project: string) {
+    this.selectedProject = project;
+  }
 
   onAddProject(addProjectForm?: NgForm): void {
     if (addProjectForm && !addProjectForm.valid) {
@@ -40,7 +49,7 @@ export class SidebarComponent {
         this.loadProjects();
         this.newProject = {
           project: '',
-          task_id: 0,
+          // task_id: 0,
         };
         const addModalCloseButton = document.querySelector(
           '#addProjectModal .btn-close'
@@ -56,7 +65,7 @@ export class SidebarComponent {
 
   newProject: Omit<Project, 'id'> = {
     project: '',
-    task_id: 0,
+    // task_id: 0,
   };
 
   loadProjects(): void {

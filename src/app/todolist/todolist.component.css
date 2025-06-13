@@ -3,12 +3,6 @@
   font-family: Arial, sans-serif;
 }
 
-.header-image {
-  height: 60px;
-  width: 60px;
-  border-radius: 5px;
-}
-
 .table {
   margin-bottom: 0;
 }
@@ -65,18 +59,9 @@
   border-radius: 8px;
 }
 
-.nav-item.hover:hover {
-  background-color: #2a8fb4;
-}
-
-.nav-item.hover:hover img {
-  background-color: #2e61d7; 
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-}
-
-.nav-item.hover:hover {
-  color: black; 
+.nav-item:hover {
+  background-color: #e6f4ea;
+  color: black;
 }
 
 .sticky-header th {
@@ -88,7 +73,7 @@
 }
 
 .sticky-header th {
-  background-color: #0a6ac9;
+  background-color: #0d6efd;
 }
 
 .mt-4 {
@@ -113,3 +98,41 @@
   overflow: hidden;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
+
+.add-task-btn {
+  text-align: center;
+  margin-right: 20px;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #0d6efd;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-task-btn:hover {
+  background-color: #6da7ff; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.add-task-text {
+  color: white;
+  padding: 6px 5px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-radius: 4px;
+}
+
+.add-task-icon {
+  width: 40px;
+  height: 40px;
+  padding: 5px;
+  border-radius: 4px;
+  background-color: white;
+}
+
