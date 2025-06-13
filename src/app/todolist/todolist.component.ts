@@ -40,7 +40,6 @@ export class TodolistComponent implements OnInit, OnDestroy {
   delete: string = 'assets/images/delete.png';
   add: string = 'assets/images/add.png';
 
-
   projects: Project[] = [];
 
   connectedLists: TodoStatus[] = [
@@ -83,6 +82,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
   };
 
   editTodoData: Todo | null = null;
+  addTodoData: Todo | null = null;
 
   userFirstName: string = 'Admin';
   private userAuthSubscription: Subscription | undefined;
@@ -212,7 +212,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
 
   addTaskOnEnter() {
     const trimmedTask = this.newTask.trim();
-    console.log('Attempting to add:', trimmedTask); 
+    console.log('Attempting to add:', trimmedTask);
 
     if (trimmedTask) {
       const newSubtask: Omit<Subtasks, 'id'> = {
@@ -222,7 +222,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
 
       this.subtasksService.addSubtask(newSubtask).subscribe({
         next: (response) => {
-          console.log('Task saved:', response); 
+          console.log('Task saved:', response);
           this.subtasks.push(response);
           this.newTask = '';
         },
@@ -433,6 +433,19 @@ export class TodolistComponent implements OnInit, OnDestroy {
         return 'bg-success text-white';
       case 'CANCELLED':
         return 'bg-secondary text-white';
+      default:
+        return 'bg-light text-dark';
+    }
+  }
+
+  getPriorityClass(priority: 'LOW' | 'MEDIUM' | 'HIGH'): string {
+    switch (priority) {
+      case 'LOW':
+        return 'bg-success text-white';
+      case 'MEDIUM':
+        return 'bg-warning text-dark';
+      case 'HIGH':
+        return 'bg-danger text-white';
       default:
         return 'bg-light text-dark';
     }
