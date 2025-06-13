@@ -153,6 +153,7 @@
                       ><em>Remarks: {{ todo.remarks }}</em></small
                     >
                   </p>
+                  <p style="color: rgb(255, 94, 49)">{{ todo.priority }}</p>
                   <div class="d-flex justify-content-between">
                     <button
                       type="button"
@@ -532,10 +533,10 @@
                         (click)="addTaskOnEnter()"
                       >
                         <img
-                        [src]="add"
-                        style="width: auto; height: 20px"
-                        alt=""
-                      />
+                          [src]="add"
+                          style="width: auto; height: 20px"
+                          alt=""
+                        />
                       </button>
                     </div>
                   </li>
@@ -570,10 +571,16 @@
                 <label for="addPriority" class="form-label"></label>
                 Priority (For addition to database field)
                 <select class="form-select" id="addPriority" name="status">
-                  <option value="PRIORITY1">Critical/Urgent/High</option>
-                  <option value="PRIORITY2">Important/High Priority</option>
-                  <option value="PRIORITY3">Normal/Medium Priority</option>
-                  <option value="PRIORITY4">Low Priority</option>
+                  <option value="Critical/Urgent/High">
+                    Critical/Urgent/High
+                  </option>
+                  <option value="Important/High Priority">
+                    Important/High Priority
+                  </option>
+                  <option value="Normal/Medium Priority">
+                    Normal/Medium Priority
+                  </option>
+                  <option value="Low Priority">Low Priority</option>
                 </select>
               </div>
             </div>
@@ -840,7 +847,11 @@
                         class="btn btn-primary"
                         (click)="addTaskOnEnter()"
                       >
-                        Add
+                        <img
+                          [src]="add"
+                          style="width: auto; height: 20px"
+                          alt=""
+                        />
                       </button>
                     </div>
                   </li>
