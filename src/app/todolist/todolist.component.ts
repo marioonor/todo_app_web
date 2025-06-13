@@ -438,18 +438,20 @@ export class TodolistComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPriorityClass(priority: 'LOW' | 'MEDIUM' | 'HIGH'): string {
-    switch (priority) {
-      case 'LOW':
-        return 'bg-success text-white';
-      case 'MEDIUM':
-        return 'bg-warning text-dark';
-      case 'HIGH':
-        return 'bg-danger text-white';
-      default:
-        return 'bg-light text-dark';
-    }
+  getPriorityClass(priority: 'LOW' | 'NORMAL' | 'IMPORTANT' | 'CRITICAL'): string {
+  switch (priority) {
+    case 'CRITICAL':
+      return 'bg-danger text-white';
+    case 'IMPORTANT':
+      return 'bg-warning text-dark';
+    case 'NORMAL':
+      return 'bg-info text-dark';
+    case 'LOW':
+      return 'bg-success text-white';
+    default:
+      return 'bg-secondary text-white';
   }
+}
 
   getStatusLabel(status: string): string {
     switch (status) {
