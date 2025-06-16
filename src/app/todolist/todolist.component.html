@@ -1,7 +1,13 @@
 <app-header></app-header>
 <div
   class="hide-scrollbar"
-  style="display: flex; flex-direction: row; width: 100%; top: 0"
+  style="
+    display: flex;
+    flex-direction: row;
+    min-height: 90vh;
+    width: 100%;
+    top: 0;
+  "
 >
   <app-sidebar></app-sidebar>
   <div
@@ -44,8 +50,9 @@
           <input
             type="text"
             class="form-control"
-            placeholder="Search projects..."
+            placeholder="Search ..."
             aria-label="Search"
+            [(ngModel)]="searchText"
           />
           <button class="btn btn-primary" type="button">
             <i class="bi bi-search"></i>
@@ -60,7 +67,6 @@
           role="button"
         >
           <p class="add-task-text">Add Task</p>
-
           <img [src]="imageAddTask" alt="Add Task" class="add-task-icon" />
         </div>
       </div>
@@ -129,84 +135,89 @@
             <ng-container *ngIf="getTodosByStatus(status).length === 0">
               <p class="text-muted text-center my-auto">No tasks here</p>
             </ng-container>
-            <ng-container *ngFor="let todo of getTodosByStatus(status)">
-              <div class="card shadow-sm" cdkDrag>
-                <div class="card-body p-3">
-                  <h5 class="card-title">{{ todo.title }}</h5>
-                  <p class="card-text">{{ todo.description }}</p>
-                  <p class="mb-1">
-                    <small>
-                      <strong>Start:</strong>
-                      {{ todo.dateStart | date : "yyyy-MM-dd" }} </small
-                    ><br />
-                    <small>
-                      <strong>End:</strong>
-                      {{ todo.dateEnd | date : "yyyy-MM-dd" }} </small
-                    ><br />
-                    <small>
-                      <strong>Due:</strong>
-                      {{ todo.dueDate | date : "yyyy-MM-dd" }}
-                    </small>
-                  </p>
-                  <p *ngIf="todo.remarks" class="mb-1">
-                    <small
-                      ><em>Remarks: {{ todo.remarks }}</em></small
-                    >
-                  </p>
-                  <div class="mt-2">
-                    <span
-                      class="badge p-2"
-                      [ngClass]="
-                        getPriorityClass(
-                          todo.priority === 'HIGH'
-                            ? 'CRITICAL'
-                            : todo.priority === 'MEDIUM'
-                            ? 'NORMAL'
-                            : todo.priority
-                        )
-                      "
-                    >
-                      {{
-                        todo.priority === "HIGH"
-                          ? "CRITICAL"
-                          : todo.priority === "MEDIUM"
-                          ? "NORMAL"
-                          : todo.priority
-                      }}
-                    </span>
-                  </div>
+            <div>
+              <div class="todo-column">
+                <ng-container *ngFor="let todo of filteredItems(status)">
+                  <div class="card shadow-sm" cdkDrag>
+                    <div class="card-body p-3">
+                      <h5 class="card-title">{{ todo.title }}</h5>
+                      <p class="card-text">{{ todo.description }}</p>
+                      <p class="mb-1">
+                        <small
+                          ><strong>Start:</strong>
+                          {{ todo.dateStart | date : "yyyy-MM-dd" }}</small
+                        ><br />
+                        <small
+                          ><strong>End:</strong>
+                          {{ todo.dateEnd | date : "yyyy-MM-dd" }}</small
+                        ><br />
+                        <small
+                          ><strong>Due:</strong>
+                          {{ todo.dueDate | date : "yyyy-MM-dd" }}</small
+                        >
+                      </p>
+                      <p *ngIf="todo.remarks" class="mb-1">
+                        <small
+                          ><em>Remarks: {{ todo.remarks }}</em></small
+                        >
+                      </p>
 
-                  <div class="d-flex justify-content-between">
-                    <button
-                      type="button"
-                      class="btn btn-sm"
-                      style="padding: 5px 10px"
-                      data-bs-toggle="modal"
-                      data-bs-target="#editTodoModal"
-                      (click)="selectTodoForEdit(todo)"
-                    >
-                      <img
-                        [src]="edit"
-                        style="width: auto; height: 20px"
-                        alt=""
-                      />
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-sm"
-                      style="padding: 5px 10px"
-                      (click)="deleteTodo(todo.id!)"
-                    >
-                      <img
-                        [src]="delete"
-                        style="width: auto; height: 20px"
-                        alt=""
-                      />
-                    </button>
+                      <div class="mt-2">
+                        <span
+                          class="badge p-2"
+                          [ngClass]="
+                            getPriorityClass(
+                              todo.priority === 'HIGH'
+                                ? 'CRITICAL'
+                                : todo.priority === 'MEDIUM'
+                                ? 'NORMAL'
+                                : todo.priority
+                            )
+                          "
+                        >
+                          {{
+                            todo.priority === "HIGH"
+                              ? "CRITICAL"
+                              : todo.priority === "MEDIUM"
+                              ? "NORMAL"
+                              : todo.priority
+                          }}
+                        </span>
+                      </div>
+
+                      <div class="d-flex justify-content-between">
+                        <button
+                          type="button"
+                          class="btn btn-sm"
+                          style="padding: 5px 10px"
+                          data-bs-toggle="modal"
+                          data-bs-target="#editTodoModal"
+                          (click)="selectTodoForEdit(todo)"
+                        >
+                          <img
+                            [src]="edit"
+                            style="width: auto; height: 20px"
+                            alt=""
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm"
+                          style="padding: 5px 10px"
+                          (click)="deleteTodo(todo.id!)"
+                        >
+                          <img
+                            [src]="delete"
+                            style="width: auto; height: 20px"
+                            alt=""
+                          />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </ng-container>
               </div>
-            </ng-container>
+            </div>
           </div>
         </div>
       </div>
@@ -281,54 +292,58 @@
           <tbody
             *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0"
           >
-            <tr *ngFor="let todo of todos" class="text-center">
-              <td>{{ todo.title }}</td>
-              <td class="description-cell">{{ todo.description }}</td>
-              <td class="text-nowrap">
-                <span
-                  class="badge"
-                  style="padding: 5px 10px"
-                  [ngClass]="getStatusClass(todo.status)"
-                >
-                  {{ getStatusLabel(todo.status) }}
-                </span>
-              </td>
-              <td class="text-nowrap">{{ todo.remarks }}</td>
-              <td class="text-nowrap">
-                {{ todo.dateStart | date : "yyyy-MM-dd" }}
-              </td>
-              <td class="text-nowrap">
-                {{ todo.dateEnd | date : "yyyy-MM-dd" }}
-              </td>
-              <td class="text-nowrap">
-                {{ todo.dueDate | date : "yyyy-MM-dd" }}
-              </td>
-              <td class="text-nowrap">{{ todo.priority }}</td>
-              <td class="text-nowrap">
-                <button
-                  type="button"
-                  class="btn btn-sm"
-                  (click)="selectTodoForEdit(todo)"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editTodoModal"
-                  style="padding: 5px 10px; margin: 5px"
-                >
-                  <img [src]="edit" style="width: auto; height: 20px" alt="" />
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-sm"
-                  (click)="deleteTodo(todo.id!)"
-                  style="padding: 5px 10px"
-                >
-                  <img
-                    [src]="delete"
-                    style="width: auto; height: 20px"
-                    alt=""
-                  />
-                </button>
-              </td>
-            </tr>
+              <tr *ngFor="let todo of filteredItems('ALL')" class="text-center">
+                <td>{{ todo.title }}</td>
+                <td class="description-cell">{{ todo.description }}</td>
+                <td class="text-nowrap">
+                  <span
+                    class="badge"
+                    style="padding: 5px 10px"
+                    [ngClass]="getStatusClass(todo.status)"
+                  >
+                    {{ getStatusLabel(todo.status) }}
+                  </span>
+                </td>
+                <td class="text-nowrap">{{ todo.remarks }}</td>
+                <td class="text-nowrap">
+                  {{ todo.dateStart | date : "yyyy-MM-dd" }}
+                </td>
+                <td class="text-nowrap">
+                  {{ todo.dateEnd | date : "yyyy-MM-dd" }}
+                </td>
+                <td class="text-nowrap">
+                  {{ todo.dueDate | date : "yyyy-MM-dd" }}
+                </td>
+                <td class="text-nowrap">{{ todo.priority }}</td>
+                <td class="text-nowrap">
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    (click)="selectTodoForEdit(todo)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editTodoModal"
+                    style="padding: 5px 10px; margin: 5px"
+                  >
+                    <img
+                      [src]="edit"
+                      style="width: auto; height: 20px"
+                      alt=""
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    (click)="deleteTodo(todo.id!)"
+                    style="padding: 5px 10px"
+                  >
+                    <img
+                      [src]="delete"
+                      style="width: auto; height: 20px"
+                      alt=""
+                    />
+                  </button>
+                </td>
+              </tr>
           </tbody>
         </table>
       </div>

@@ -87,6 +87,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
   userFirstName: string = 'Admin';
   private userAuthSubscription: Subscription | undefined;
 
+  searchText: string = '';
+
   constructor(
     private router: Router,
     private todoService: TodoService,
@@ -99,6 +101,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     this.loadTodos();
     this.loadProjects();
     this.loadSubtasks();
+
     this.userAuthSubscription = this.authService.currentUser.subscribe(
       (user) => {
         if (user && user.firstName) {
@@ -108,8 +111,19 @@ export class TodolistComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
 
-    this.organizeTodos();
+  filteredItems(status: string): Todo[] {
+    return this.todos.filter((todo) => {
+      const matchesStatus = status === 'ALL' || todo.status === status;
+      const search = this.searchText.trim().toLowerCase();
+      const matchesSearch =
+        todo.title.toLowerCase().includes(search) ||
+        todo.description.toLowerCase().includes(search) ||
+        todo.priority.toLowerCase().includes(search) ||
+        todo.status.toLowerCase().includes(search);
+      return matchesStatus && matchesSearch;
+    });
   }
 
   setView(view: 'kanban' | 'simpleList'): void {
@@ -127,7 +141,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     this.errorMessage = null;
     this.todoService.getTodos().subscribe({
       next: (data) => {
-        this.todos = data;
+        this.todos = this.deduplicateTodos(data);
         this.isLoading = false;
         this.organizeTodos();
       },
@@ -136,6 +150,10 @@ export class TodolistComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
     });
+  }
+
+  deduplicateTodos(todos: Todo[]): Todo[] {
+    return Array.from(new Map(todos.map((todo) => [todo.id, todo])).values());
   }
 
   loadProjects(): void {
@@ -438,20 +456,22 @@ export class TodolistComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPriorityClass(priority: 'LOW' | 'NORMAL' | 'IMPORTANT' | 'CRITICAL'): string {
-  switch (priority) {
-    case 'CRITICAL':
-      return 'bg-danger text-white';
-    case 'IMPORTANT':
-      return 'bg-warning text-dark';
-    case 'NORMAL':
-      return 'bg-info text-dark';
-    case 'LOW':
-      return 'bg-success text-white';
-    default:
-      return 'bg-secondary text-white';
+  getPriorityClass(
+    priority: 'LOW' | 'NORMAL' | 'IMPORTANT' | 'CRITICAL'
+  ): string {
+    switch (priority) {
+      case 'CRITICAL':
+        return 'bg-danger text-white';
+      case 'IMPORTANT':
+        return 'bg-warning text-dark';
+      case 'NORMAL':
+        return 'bg-info text-dark';
+      case 'LOW':
+        return 'bg-success text-white';
+      default:
+        return 'bg-secondary text-white';
+    }
   }
-}
 
   getStatusLabel(status: string): string {
     switch (status) {
