@@ -55,8 +55,16 @@
       (ngSubmit)="onRegister()"
       #registerForm="ngForm"
     >
-      <div class="m-3" >
-        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+      <div class="m-3">
+        <div
+          class="form-group row"
+          style="
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
           <!-- <label class="col-form-label col-4" for="username">User Name:</label> -->
           <div class="col-8">
             <input
@@ -70,7 +78,15 @@
             />
           </div>
         </div>
-        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+        <div
+          class="form-group row"
+          style="
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
           <!-- <label class="col-form-label col-4" for="email">Email:</label> -->
           <div class="col-8">
             <input
@@ -84,10 +100,21 @@
             />
           </div>
         </div>
-        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+        <div
+          class="form-group row"
+          style="
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
           <!-- <label class="col-form-label col-4" for="password">Password:</label> -->
           <div class="col-8">
-            <div class="input-group" style="border: rgb(226, 226, 226) 1px solid; border-radius: 5px">
+            <div
+              class="input-group"
+              style="border: rgb(226, 226, 226) 1px solid; border-radius: 5px"
+            >
               <input
                 class="form-control"
                 [type]="showpassword ? 'text' : 'password'"
@@ -96,7 +123,7 @@
                 placeholder="Password"
                 [(ngModel)]="password"
                 required
-                style="border: 0;"
+                style="border: 0"
               />
               <button
                 type="button"
@@ -110,7 +137,15 @@
           </div>
         </div>
 
-        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+        <div
+          class="form-group row"
+          style="
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
           <!-- <label class="col-form-label col-4" for="firstName"
             >First Name:</label
           > -->
@@ -128,7 +163,15 @@
             />
           </div>
         </div>
-        <div class="form-group row" style="padding: 5px; display: flex; justify-content: center; align-items: center;">
+        <div
+          class="form-group row"
+          style="
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
           <!-- <label class="col-form-label col-4" for="lastName">Last Name:</label> -->
           <div class="col-8">
             <input
@@ -142,6 +185,29 @@
               [(ngModel)]="lastName"
               required
             />
+          </div>
+        </div>
+        <div
+          class="form-group row"
+          style="
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <!-- <label class="col-form-label col-4" for="role">Role:</label> -->
+          <div class="col-8">
+            <select
+              class="form-select"
+              id="role"
+              name="role"
+              [(ngModel)]="role"
+              required
+            >
+              <option value="0" selected>User</option>
+              <option value="1">Admin</option>
+            </select>
           </div>
         </div>
         <div class="m-3" style="text-align: center">

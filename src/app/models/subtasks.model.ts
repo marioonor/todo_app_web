@@ -1,6 +1,6 @@
 export interface Subtasks {
-
-    id: number;
-    subtasks: string;
-    completed: boolean;
+  id: number;
+  subtasks: string;
+  completed: boolean;
+  todo?: { id: number }; 
 }

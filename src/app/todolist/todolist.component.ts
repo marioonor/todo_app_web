@@ -50,6 +50,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
   ];
 
   isCollapsed = false;
+  pendingSubtasksForNewTodo: { subtasks: string; completed: boolean }[] = [];
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
@@ -216,39 +217,101 @@ export class TodolistComponent implements OnInit, OnDestroy {
         const addModalCloseButton = document.querySelector(
           '#addTodoModal .btn-close'
         ) as HTMLElement;
+        if (this.pendingSubtasksForNewTodo.length > 0 && addedTodo.id) {
+          this.savePendingSubtasks(addedTodo.id);
+        } else {
+          this.pendingSubtasksForNewTodo = []; // Clear if no subtasks or no ID
+        }
         addModalCloseButton?.click();
       },
       error: (error) => {
         console.error('Failed to add todo:', error);
         alert(`Failed to add todo: ${error.message || 'Server error'}`);
+        this.pendingSubtasksForNewTodo = [];
       },
     });
   }
 
-  newTask: string = '';
+  // newTask: string = '';
+  newTaskForAddModal: string = '';
+  newTaskForEditModal: string = '';
   subtasks: Subtasks[] = [];
 
-  addTaskOnEnter() {
-    const trimmedTask = this.newTask.trim();
-    console.log('Attempting to add:', trimmedTask);
+  addTaskOnEnter(parentTodoId?: number, context: 'add' | 'edit' = 'edit') {
+    const taskInput =
+      context === 'add' ? this.newTaskForAddModal : this.newTaskForEditModal;
+    const trimmedTask = taskInput.trim();
+    console.log(
+      'Attempting to add subtask:',
+      trimmedTask,
+      'for parentTodoId:',
+      parentTodoId
+    );
+
+    if (context === 'add') {
+      if (trimmedTask) {
+        this.pendingSubtasksForNewTodo.push({
+          subtasks: trimmedTask,
+          completed: false,
+        });
+        this.newTaskForAddModal = '';
+      } else {
+        console.warn('Subtask for new Todo is empty!');
+      }
+      return; // Do not proceed to save to backend yet for 'add' context
+    }
+
+    // Logic for 'edit' context (parentTodoId should be present)
+    if (!parentTodoId && context === 'edit') {
+      console.error(
+        'Cannot add subtask to existing Todo: Parent Todo ID is missing.'
+      );
+      return;
+    }
 
     if (trimmedTask) {
       const newSubtask: Omit<Subtasks, 'id'> = {
         subtasks: trimmedTask,
         completed: false,
+        todo: { id: parentTodoId! },
       };
 
       this.subtasksService.addSubtask(newSubtask).subscribe({
         next: (response) => {
           console.log('Task saved:', response);
-          this.subtasks.push(response);
-          this.newTask = '';
+          this.subtasks.push(response); // Consider refreshing subtasks for the specific todo
+          if (context === 'edit') {
+            this.newTaskForEditModal = '';
+          }
         },
         error: (err) => console.error('Failed to add task:', err),
       });
     } else {
       console.warn('Task is empty!');
     }
+  }
+
+  private savePendingSubtasks(parentTodoId: number): void {
+    const subtaskObservables = this.pendingSubtasksForNewTodo.map(
+      (pendingSubtask: { subtasks: any; completed: any }) => {
+        const newSubtaskPayload: Omit<Subtasks, 'id'> = {
+          subtasks: pendingSubtask.subtasks,
+          completed: pendingSubtask.completed,
+          todo: { id: parentTodoId },
+        };
+        return this.subtasksService.addSubtask(newSubtaskPayload);
+      }
+    );
+
+    forkJoin(subtaskObservables).subscribe({
+      next: (savedSubtasks) => {
+        console.log('All pending subtasks saved:', savedSubtasks);
+        this.loadSubtasks(); // Or update local subtasks array more selectively
+        this.pendingSubtasksForNewTodo = [];
+      },
+      error: (err) =>
+        console.error('Failed to save one or more pending subtasks:', err),
+    });
   }
 
   toggleComplete(subtask: Subtasks) {
@@ -259,6 +322,18 @@ export class TodolistComponent implements OnInit, OnDestroy {
     });
   }
 
+  togglePendingSubtaskComplete(subtask: {
+    subtasks: string;
+    completed: boolean;
+  }): void {
+    subtask.completed = !subtask.completed;
+  }
+
+  openAddTodoModal(): void {
+    this.pendingSubtasksForNewTodo = []; // Clear pending subtasks when modal is opened
+    this.newTaskForAddModal = '';
+  }
+
   selectTodoForEdit(todo: Todo): void {
     this.editTodoData = {
       ...todo,
@@ -266,6 +341,14 @@ export class TodolistComponent implements OnInit, OnDestroy {
       dateEnd: this.formatDateForInput(todo.dateEnd),
       dueDate: this.formatDateForInput(todo.dueDate),
     };
+    this.newTaskForEditModal = '';
+  }
+
+  getFilteredSubtasksForEdit(todoId: number | undefined): Subtasks[] {
+    if (!todoId) {
+      return [];
+    }
+    return this.subtasks.filter((s) => s.todo?.id === todoId);
   }
 
   private formatDateForInput(dateStr: string | Date): string {
@@ -293,12 +376,11 @@ export class TodolistComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (updatedTodo) => {
           alert('Todo item updated successfully!');
-          this.loadTodos();
-          this.editTodoData = null;
           if (editTodoForm) {
-            editTodoForm.resetForm();
+            editTodoForm.resetForm(); 
           }
-
+          this.editTodoData = null;
+          this.loadTodos();
           const editModalCloseButton = document.querySelector(
             '#editTodoModal .btn-close'
           ) as HTMLElement;

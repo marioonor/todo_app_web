@@ -10,6 +10,7 @@ interface RegistrationPayload {
   password: string;
   firstName: string;
   lastName: string;
+  role: string;
 }
 
 interface UserResponse {
@@ -33,6 +34,7 @@ export class RegisterComponent {
   password: string = '';
   firstName: string = '';
   lastName: string = '';
+  role: string = '0';
   showpassword: boolean = false;
 
   imagePath: string = 'assets/images/image.png';
@@ -65,6 +67,7 @@ export class RegisterComponent {
       password: this.password,
       firstName: this.firstName,
       lastName: this.lastName,
+      role: this.role,
     };
 
     this.http.post<UserResponse>(this.apiUrl, userData).subscribe({

@@ -64,6 +64,7 @@
           class="nav-item hover add-task-btn"
           data-bs-toggle="modal"
           data-bs-target="#addTodoModal"
+          (click)="openAddTodoModal()"
           role="button"
         >
           <p class="add-task-text">Add Task</p>
@@ -292,58 +293,54 @@
           <tbody
             *ngIf="!isLoading && !errorMessage && (todos?.length ?? 0) > 0"
           >
-              <tr *ngFor="let todo of filteredItems('ALL')" class="text-center">
-                <td>{{ todo.title }}</td>
-                <td class="description-cell">{{ todo.description }}</td>
-                <td class="text-nowrap">
-                  <span
-                    class="badge"
-                    style="padding: 5px 10px"
-                    [ngClass]="getStatusClass(todo.status)"
-                  >
-                    {{ getStatusLabel(todo.status) }}
-                  </span>
-                </td>
-                <td class="text-nowrap">{{ todo.remarks }}</td>
-                <td class="text-nowrap">
-                  {{ todo.dateStart | date : "yyyy-MM-dd" }}
-                </td>
-                <td class="text-nowrap">
-                  {{ todo.dateEnd | date : "yyyy-MM-dd" }}
-                </td>
-                <td class="text-nowrap">
-                  {{ todo.dueDate | date : "yyyy-MM-dd" }}
-                </td>
-                <td class="text-nowrap">{{ todo.priority }}</td>
-                <td class="text-nowrap">
-                  <button
-                    type="button"
-                    class="btn btn-sm"
-                    (click)="selectTodoForEdit(todo)"
-                    data-bs-toggle="modal"
-                    data-bs-target="#editTodoModal"
-                    style="padding: 5px 10px; margin: 5px"
-                  >
-                    <img
-                      [src]="edit"
-                      style="width: auto; height: 20px"
-                      alt=""
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-sm"
-                    (click)="deleteTodo(todo.id!)"
-                    style="padding: 5px 10px"
-                  >
-                    <img
-                      [src]="delete"
-                      style="width: auto; height: 20px"
-                      alt=""
-                    />
-                  </button>
-                </td>
-              </tr>
+            <tr *ngFor="let todo of filteredItems('ALL')" class="text-center">
+              <td>{{ todo.title }}</td>
+              <td class="description-cell">{{ todo.description }}</td>
+              <td class="text-nowrap">
+                <span
+                  class="badge"
+                  style="padding: 5px 10px"
+                  [ngClass]="getStatusClass(todo.status)"
+                >
+                  {{ getStatusLabel(todo.status) }}
+                </span>
+              </td>
+              <td class="text-nowrap">{{ todo.remarks }}</td>
+              <td class="text-nowrap">
+                {{ todo.dateStart | date : "yyyy-MM-dd" }}
+              </td>
+              <td class="text-nowrap">
+                {{ todo.dateEnd | date : "yyyy-MM-dd" }}
+              </td>
+              <td class="text-nowrap">
+                {{ todo.dueDate | date : "yyyy-MM-dd" }}
+              </td>
+              <td class="text-nowrap">{{ todo.priority }}</td>
+              <td class="text-nowrap">
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  (click)="selectTodoForEdit(todo)"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editTodoModal"
+                  style="padding: 5px 10px; margin: 5px"
+                >
+                  <img [src]="edit" style="width: auto; height: 20px" alt="" />
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  (click)="deleteTodo(todo.id!)"
+                  style="padding: 5px 10px"
+                >
+                  <img
+                    [src]="delete"
+                    style="width: auto; height: 20px"
+                    alt=""
+                  />
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -556,18 +553,19 @@
                       <input
                         type="text"
                         class="form-control"
-                        id="subtaskInput"
-                        name="subtaskInput"
-                        [(ngModel)]="newTask"
+                        id="subtaskInputAdd"
+                        name="subtaskInputAdd"
+                        [(ngModel)]="newTaskForAddModal"
                         (keydown.enter)="
-                          addTaskOnEnter(); $event.preventDefault()
+                          addTaskOnEnter(undefined, 'add');
+                          $event.preventDefault()
                         "
                       />
 
                       <button
                         type="button"
                         class="btn btn-primary"
-                        (click)="addTaskOnEnter()"
+                        (click)="addTaskOnEnter(undefined, 'add')"
                       >
                         <img
                           [src]="add"
@@ -581,12 +579,15 @@
                   <!-- Subtask list -->
                   <div>
                     <label class="form-label">Subtasks:</label>
-                    <ul class="list-unstyled">
-                      <li *ngFor="let subtask of subtasks">
+                    <ul
+                      class="list-unstyled"
+                      *ngIf="pendingSubtasksForNewTodo.length > 0"
+                    >
+                      <li *ngFor="let subtask of pendingSubtasksForNewTodo">
                         <input
                           type="checkbox"
                           [checked]="subtask.completed"
-                          (change)="toggleComplete(subtask)"
+                          (change)="togglePendingSubtaskComplete(subtask)"
                         />
                         <span
                           [ngClass]="{
@@ -891,18 +892,21 @@
                       <input
                         type="text"
                         class="form-control"
-                        id="subtaskInput"
-                        name="subtaskInput"
-                        [(ngModel)]="newTask"
+                        id="subtaskInputEdit"
+                        name="subtaskInputEdit"
+                        [(ngModel)]="newTaskForEditModal"
+                        [disabled]="!editTodoData.id"
                         (keydown.enter)="
-                          addTaskOnEnter(); $event.preventDefault()
+                          addTaskOnEnter(editTodoData.id, 'edit');
+                          $event.preventDefault()
                         "
                       />
 
                       <button
                         type="button"
                         class="btn btn-primary"
-                        (click)="addTaskOnEnter()"
+                        [disabled]="!editTodoData.id"
+                        (click)="addTaskOnEnter(editTodoData.id, 'edit')"
                       >
                         <img
                           [src]="add"
@@ -916,8 +920,14 @@
                   <!-- Subtask list -->
                   <div>
                     <label class="form-label">Subtasks:</label>
-                    <ul class="list-unstyled">
-                      <li *ngFor="let subtask of subtasks">
+                    <ul class="list-unstyled" *ngIf="editTodoData?.id">
+                      <li
+                        *ngFor="
+                          let subtask of getFilteredSubtasksForEdit(
+                            editTodoData.id
+                          )
+                        "
+                      >
                         <input
                           type="checkbox"
                           [checked]="subtask.completed"
