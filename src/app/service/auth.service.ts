@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private authApiUrl = `${environment.apiUrl}/auth`; 
-  private currentUserKey = 'currentUser'; 
+  private authApiUrl = `${environment.apiUrl}/auth`;
+  private currentUserKey = 'currentUser';
 
   private currentUserSubject: BehaviorSubject<UserResponse | null>;
   public currentUser: Observable<UserResponse | null>;
@@ -42,7 +42,7 @@ export class AuthService {
           if (user && user.token) {
             localStorage.setItem(this.currentUserKey, JSON.stringify(user));
             this.currentUserSubject.next(user);
-            if (!user.id && environment.production === false) { 
+            if (!user.id && environment.production === false) {
               console.warn('AuthService: Login successful and token received, but user.id is missing in the response. Full user details may not be available. Backend should ideally provide a complete UserResponse including user ID.', user);
             }
           } else {
@@ -61,6 +61,10 @@ export class AuthService {
   getLoggedInUserFirstName(): string | null {
     const user = this.currentUserSubject.value;
     return user ? user.firstName : null;
+  }
+
+  public getCurrentUserValue(): UserResponse | null {
+    return this.currentUserSubject.value;
   }
 
   public isAuthenticated(): boolean {

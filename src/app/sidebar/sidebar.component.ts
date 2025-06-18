@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Project } from '../models/project.models';
+import { AuthService } from '../service/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -21,7 +22,12 @@ export class SidebarComponent {
   isLoading: boolean = false;
   errorMessage: string | null = null;
 
-  constructor(private projectService: ProjectService) {}
+  newProjectName: string = '';
+
+  constructor(
+    private projectService: ProjectService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadProjects();
@@ -38,19 +44,40 @@ export class SidebarComponent {
   }
 
   onAddProject(addProjectForm?: NgForm): void {
-    if (addProjectForm && !addProjectForm.valid) {
+    const trimmedProjectName = this.newProjectName.trim();
+
+    if (!trimmedProjectName) {
+      alert('Project name cannot be empty.');
+      return;
+    }
+
+    if (addProjectForm && addProjectForm.invalid) {
       alert('Please fill all required fields correctly.');
       return;
     }
 
-    this.projectService.addproject(this.newProject).subscribe({
+    const currentUser = this.authService.getCurrentUserValue();
+    if (!currentUser || !currentUser.id) {
+      alert(
+        'User not authenticated or user ID is missing. Cannot add project.'
+      );
+      console.error('User not authenticated or user ID is missing.');
+      return;
+    }
+
+    const projectPayload: Omit<Project, 'id'> = {
+      project: trimmedProjectName,
+      user: { id: currentUser.id },
+    };
+
+    this.projectService.addProject(projectPayload).subscribe({
       next: (addedProject) => {
         alert('Project added successfully!');
         this.loadProjects();
-        this.newProject = {
-          project: '',
-          // task_id: 0,
-        };
+        this.newProjectName = ''; // Reset form field
+        if (addProjectForm) {
+          addProjectForm.resetForm();
+        }
         const addModalCloseButton = document.querySelector(
           '#addProjectModal .btn-close'
         ) as HTMLElement;
@@ -63,11 +90,6 @@ export class SidebarComponent {
     });
   }
 
-  newProject: Omit<Project, 'id'> = {
-    project: '',
-    // task_id: 0,
-  };
-
   loadProjects(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -79,7 +101,7 @@ export class SidebarComponent {
       error: (err) => {
         this.errorMessage = err.message || 'Could not load projects.';
         this.isLoading = false;
-      }
+      },
     });
   }
 }
