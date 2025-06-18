@@ -73,7 +73,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     priority: 'LOW',
   };
 
-  selectedProjectIdForNewTodo: number | null = null; 
+  selectedProjectIdForNewTodo: number | null = null;
 
   currentYear: number = new Date().getFullYear();
 
@@ -194,7 +194,10 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   onAddTodo(addTodoForm?: NgForm): void {
-    console.log('Selected Project ID at start of onAddTodo:', this.selectedProjectIdForNewTodo);
+    console.log(
+      'Selected Project ID at start of onAddTodo:',
+      this.selectedProjectIdForNewTodo
+    );
     if (addTodoForm && !addTodoForm.valid) {
       alert('Please fill all required fields correctly.');
       return;
@@ -203,7 +206,9 @@ export class TodolistComponent implements OnInit, OnDestroy {
     const currentUser = this.authService.getCurrentUserValue();
     if (!currentUser || !currentUser.id) {
       alert('User not authenticated or user ID is missing. Cannot add todo.');
-      console.error('User not authenticated or user ID is missing for adding todo.');
+      console.error(
+        'User not authenticated or user ID is missing for adding todo.'
+      );
       return;
     }
 
@@ -410,7 +415,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
         next: (updatedTodo) => {
           alert('Todo item updated successfully!');
           if (editTodoForm) {
-            editTodoForm.resetForm(); 
+            editTodoForm.resetForm();
           }
           this.editTodoData = null;
           this.loadTodos();
@@ -429,8 +434,10 @@ export class TodolistComponent implements OnInit, OnDestroy {
   deleteTodo(id: number): void {
     if (!id) return;
     if (confirm('Are you sure you want to delete this todo?')) {
-      this.todoService.deleteTodo(id).subscribe({ // The service now returns Observable<{ message: string }>
-        next: (response) => { // response is { message: "..." }
+      this.todoService.deleteTodo(id).subscribe({
+        // The service now returns Observable<{ message: string }>
+        next: (response) => {
+          // response is { message: "..." }
           alert(response.message || 'Todo deleted successfully!');
           this.loadTodos();
         },
@@ -557,7 +564,10 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   editSubtask(subtask: Subtasks): void {
-    const newSubtaskText = prompt('Enter new text for the subtask:', subtask.subtasks);
+    const newSubtaskText = prompt(
+      'Enter new text for the subtask:',
+      subtask.subtasks
+    );
     if (newSubtaskText !== null) {
       const trimmedText = newSubtaskText.trim();
       if (trimmedText && trimmedText !== subtask.subtasks) {
@@ -565,19 +575,44 @@ export class TodolistComponent implements OnInit, OnDestroy {
           ...subtask,
           subtasks: trimmedText,
         };
-        this.subtasksService.updateSubtask(subtask.id, updatedSubtaskPayload).subscribe({
-          next: (updatedSubtaskFromServer) => {
-            const index = this.subtasks.findIndex(s => s.id === subtask.id);
-            if (index !== -1) {
-              this.subtasks[index] = updatedSubtaskFromServer;
-            }
-            alert('Subtask updated successfully!');
-          },
-          error: (err) => {
-            console.error('Failed to update subtask:', err);
-            alert(`Failed to update subtask: ${err.message || 'Server error'}`);
-          }
-        });
+        this.subtasksService
+          .updateSubtask(subtask.id, updatedSubtaskPayload)
+          .subscribe({
+            next: (updatedSubtaskFromServer) => {
+              const index = this.subtasks.findIndex((s) => s.id === subtask.id);
+              if (index !== -1) {
+                this.subtasks[index] = updatedSubtaskFromServer;
+              }
+              alert('Subtask updated successfully!');
+            },
+            error: (err) => {
+              console.error('Failed to update subtask:', err);
+              alert(
+                `Failed to update subtask: ${err.message || 'Server error'}`
+              );
+            },
+          });
+      }
+    }
+  }
+
+  removePendingSubtask(index: number): void {
+    if (confirm('Are you sure you want to remove this subtask?')) {
+      if (index > -1 && index < this.pendingSubtasksForNewTodo.length) {
+        this.pendingSubtasksForNewTodo.splice(index, 1);
+      }
+    }
+  }
+
+  editPendingSubtask(index: number): void {
+    if (index > -1 && index < this.pendingSubtasksForNewTodo.length) {
+      const currentSubtask = this.pendingSubtasksForNewTodo[index];
+      const newSubtaskText = prompt('Edit subtask:', currentSubtask.subtasks);
+      if (newSubtaskText !== null) {
+        const trimmedText = newSubtaskText.trim();
+        if (trimmedText) {
+          this.pendingSubtasksForNewTodo[index].subtasks = trimmedText;
+        }
       }
     }
   }
@@ -586,13 +621,12 @@ export class TodolistComponent implements OnInit, OnDestroy {
     if (confirm('Are you sure you want to delete this subtask?')) {
       this.subtasksService.deleteSubtask(subtaskId).subscribe({
         next: () => {
-          this.subtasks = this.subtasks.filter(s => s.id !== subtaskId);
-          alert('Subtask deleted successfully!');
+          this.subtasks = this.subtasks.filter((s) => s.id !== subtaskId);
         },
         error: (err) => {
           console.error('Failed to delete subtask:', err);
           alert(`Failed to delete subtask: ${err.message || 'Server error'}`);
-        }
+        },
       });
     }
   }

@@ -589,28 +589,6 @@
                   </li>
 
                   <!-- Subtask list -->
-                  <div>
-                    <label class="form-label">Subtasks:</label>
-                    <ul
-                      class="list-unstyled"
-                      *ngIf="pendingSubtasksForNewTodo.length > 0"
-                    >
-                      <li *ngFor="let subtask of pendingSubtasksForNewTodo">
-                        <input
-                          type="checkbox"
-                          [checked]="subtask.completed"
-                          (change)="togglePendingSubtaskComplete(subtask)"
-                        />
-                        <span
-                          [ngClass]="{
-                            'text-decoration-line-through': subtask.completed
-                          }"
-                        >
-                          {{ subtask.subtasks }}
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
 
                   <!-- Added field (End)----------------------------------------------------------------------->
                 </ul>
@@ -651,6 +629,74 @@
                   class="text-danger"
                 >
                   Priority is required.
+                </div>
+              </div>
+              <div class="row">
+                <div
+                  style="
+                    background-color: rgb(255, 255, 255);
+                    padding: 10px;
+                    width: 100%;
+                    border-radius: 5px;
+                    color: black;
+                    margin-left: 13px;
+                  "
+                >
+                  <label class="form-label">Subtasks:</label>
+                  <ul class="list-unstyled">
+                    <li
+                      *ngFor="
+                        let subtask of pendingSubtasksForNewTodo;
+                        let i = index
+                      "
+                    >
+                      <input
+                        type="checkbox"
+                        [checked]="subtask.completed"
+                        (change)="togglePendingSubtaskComplete(subtask)"
+                      />
+                      <span
+                        class="ms-2 flex-grow-1"
+                        [ngClass]="{
+                          'text-decoration-line-through': subtask.completed
+                        }"
+                      >
+                        {{ subtask.subtasks }}
+                      </span>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-light ms-2"
+                        (click)="editPendingSubtask(i)"
+                        title="Edit Subtask"
+                        style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
+                      >
+                        <img
+                          [src]="edit"
+                          style="width: 12px; height: 12px"
+                          alt="Edit"
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm ms-2"
+                        (click)="removePendingSubtask(i)"
+                        title="Remove Subtask"
+                        style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
+                      >
+                        <img
+                          [src]="delete"
+                          style="width: 12px; height: 12px"
+                          alt="Remove"
+                        />
+                      </button>
+                    </li>
+                    <li
+                      *ngIf="pendingSubtasksForNewTodo.length === 0"
+                      class="text-muted"
+                    >
+                      No subtasks added yet.
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -956,66 +1002,66 @@
                 </select>
               </div>
               <div class="row">
-                  <div
-                    style="
-                      background-color: rgb(255, 255, 255);
-                      padding: 10px;
-                      width: 100%;
-                      border-radius: 5px;
-                      color: black;
-                      margin-left: 13px;
-                    "
-                  >
-                    <label class="form-label">Subtasks:</label>
-                    <ul class="list-unstyled" *ngIf="editTodoData?.id">
-                      <li
-                        *ngFor="
-                          let subtask of getFilteredSubtasksForEdit(
-                            editTodoData.id
-                          )
-                        "
+                <div
+                  style="
+                    background-color: rgb(255, 255, 255);
+                    padding: 10px;
+                    width: 100%;
+                    border-radius: 5px;
+                    color: black;
+                    margin-left: 13px;
+                  "
+                >
+                  <label class="form-label">Subtasks:</label>
+                  <ul class="list-unstyled" *ngIf="editTodoData?.id">
+                    <li
+                      *ngFor="
+                        let subtask of getFilteredSubtasksForEdit(
+                          editTodoData.id
+                        )
+                      "
+                    >
+                      <input
+                        type="checkbox"
+                        [checked]="subtask.completed"
+                        (change)="toggleComplete(subtask)"
+                      />
+                      <span
+                        [ngClass]="{
+                          'text-decoration-line-through': subtask.completed
+                        }"
                       >
-                        <input
-                          type="checkbox"
-                          [checked]="subtask.completed"
-                          (change)="toggleComplete(subtask)"
+                        {{ subtask.subtasks }}
+                      </span>
+                      <button
+                        type="button"
+                        class="btn btn-sm ms-2"
+                        (click)="editSubtask(subtask)"
+                        title="Edit Subtask"
+                        style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
+                      >
+                        <img
+                          [src]="edit"
+                          style="width: 12px; height: 12px"
+                          alt="Edit"
                         />
-                        <span
-                          [ngClass]="{
-                            'text-decoration-line-through': subtask.completed
-                          }"
-                        >
-                          {{ subtask.subtasks }}
-                        </span>
-                        <button
-                          type="button"
-                          class="btn btn-sm ms-2"
-                          (click)="editSubtask(subtask)"
-                          title="Edit Subtask"
-                          style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
-                        >
-                          <img
-                            [src]="edit"
-                            style="width: 12px; height: 12px"
-                            alt="Edit"
-                          />
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-sm ms-1"
-                          (click)="deleteSubtask(subtask.id)"
-                          title="Delete Subtask"
-                          style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
-                        >
-                          <img
-                            [src]="delete"
-                            style="width: 12px; height: 12px"
-                            alt="Delete"
-                          />
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm ms-1"
+                        (click)="deleteSubtask(subtask.id)"
+                        title="Delete Subtask"
+                        style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
+                      >
+                        <img
+                          [src]="delete"
+                          style="width: 12px; height: 12px"
+                          alt="Delete"
+                        />
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
             <div class="modal-footer">
