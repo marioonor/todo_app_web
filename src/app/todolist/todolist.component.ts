@@ -556,6 +556,47 @@ export class TodolistComponent implements OnInit, OnDestroy {
     return this.todosByStatus[status] || [];
   }
 
+  editSubtask(subtask: Subtasks): void {
+    const newSubtaskText = prompt('Enter new text for the subtask:', subtask.subtasks);
+    if (newSubtaskText !== null) {
+      const trimmedText = newSubtaskText.trim();
+      if (trimmedText && trimmedText !== subtask.subtasks) {
+        const updatedSubtaskPayload: Subtasks = {
+          ...subtask,
+          subtasks: trimmedText,
+        };
+        this.subtasksService.updateSubtask(subtask.id, updatedSubtaskPayload).subscribe({
+          next: (updatedSubtaskFromServer) => {
+            const index = this.subtasks.findIndex(s => s.id === subtask.id);
+            if (index !== -1) {
+              this.subtasks[index] = updatedSubtaskFromServer;
+            }
+            alert('Subtask updated successfully!');
+          },
+          error: (err) => {
+            console.error('Failed to update subtask:', err);
+            alert(`Failed to update subtask: ${err.message || 'Server error'}`);
+          }
+        });
+      }
+    }
+  }
+
+  deleteSubtask(subtaskId: number): void {
+    if (confirm('Are you sure you want to delete this subtask?')) {
+      this.subtasksService.deleteSubtask(subtaskId).subscribe({
+        next: () => {
+          this.subtasks = this.subtasks.filter(s => s.id !== subtaskId);
+          alert('Subtask deleted successfully!');
+        },
+        error: (err) => {
+          console.error('Failed to delete subtask:', err);
+          alert(`Failed to delete subtask: ${err.message || 'Server error'}`);
+        }
+      });
+    }
+  }
+
   getStatusClass(status: string): string {
     switch (status) {
       case 'PENDING':

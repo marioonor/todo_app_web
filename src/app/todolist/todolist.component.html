@@ -936,9 +936,36 @@
                       </button>
                     </div>
                   </li>
-
-                  <!-- Subtask list -->
-                  <div>
+                </ul>
+                <!-- Added field (End)----------------------------------------------------------------------->
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="editPriority" class="form-label">
+                  Priority (For addition to database field)
+                </label>
+                <select
+                  class="form-select"
+                  id="editPriority"
+                  name="priority"
+                  [(ngModel)]="editTodoData.priority"
+                >
+                  <option value="CRITICAL">Critical/Urgent/High</option>
+                  <option value="IMPORTANT">Important/High Priority</option>
+                  <option value="NORMAL">Normal/Medium Priority</option>
+                  <option value="LOW">Low Priority</option>
+                </select>
+              </div>
+              <div class="row">
+                  <div
+                    style="
+                      background-color: rgb(255, 255, 255);
+                      padding: 10px;
+                      width: 100%;
+                      border-radius: 5px;
+                      color: black;
+                      margin-left: 13px;
+                    "
+                  >
                     <label class="form-label">Subtasks:</label>
                     <ul class="list-unstyled" *ngIf="editTodoData?.id">
                       <li
@@ -960,28 +987,35 @@
                         >
                           {{ subtask.subtasks }}
                         </span>
+                        <button
+                          type="button"
+                          class="btn btn-sm ms-2"
+                          (click)="editSubtask(subtask)"
+                          title="Edit Subtask"
+                          style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
+                        >
+                          <img
+                            [src]="edit"
+                            style="width: 12px; height: 12px"
+                            alt="Edit"
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm ms-1"
+                          (click)="deleteSubtask(subtask.id)"
+                          title="Delete Subtask"
+                          style="padding: 0.1rem 0.3rem; font-size: 0.7rem"
+                        >
+                          <img
+                            [src]="delete"
+                            style="width: 12px; height: 12px"
+                            alt="Delete"
+                          />
+                        </button>
                       </li>
                     </ul>
                   </div>
-
-                  <!-- Added field (End)----------------------------------------------------------------------->
-                </ul>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="editPriority" class="form-label">
-                  Priority (For addition to database field)
-                </label>
-                <select
-                  class="form-select"
-                  id="editPriority"
-                  name="priority"
-                  [(ngModel)]="editTodoData.priority"
-                >
-                  <option value="CRITICAL">Critical/Urgent/High</option>
-                  <option value="IMPORTANT">Important/High Priority</option>
-                  <option value="NORMAL">Normal/Medium Priority</option>
-                  <option value="LOW">Low Priority</option>
-                </select>
               </div>
             </div>
             <div class="modal-footer">
