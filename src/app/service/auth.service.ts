@@ -60,7 +60,7 @@ export class AuthService {
 
   getLoggedInUserFirstName(): string | null {
     const user = this.currentUserSubject.value;
-    return user ? user.firstName : null;
+    return user ? user.username : null;
   }
 
   public getCurrentUserValue(): UserResponse | null {
