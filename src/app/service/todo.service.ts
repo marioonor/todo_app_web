@@ -34,8 +34,8 @@ export class TodoService {
     );
   }
 
-  deleteTodo(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.todoApiUrl}/${id}`).pipe(
+  deleteTodo(id: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.todoApiUrl}/${id}`).pipe(
       tap(() => console.log(`Deleted todo with id=${id}`)),
       catchError(this.handleError)
     );

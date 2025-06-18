@@ -9,6 +9,13 @@ export interface Todo {
   order?: number;
   dueDate: string | Date;
   priority: 'LOW' | 'MEDIUM' | 'HIGH';
+
+  user?: {
+    id: number;
+  };
+  project?: {
+    id: number;
+  };
   
 }
 

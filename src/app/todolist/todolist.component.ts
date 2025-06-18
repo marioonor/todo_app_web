@@ -73,6 +73,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
     priority: 'LOW',
   };
 
+  selectedProjectIdForNewTodo: number | null = null; 
+
   currentYear: number = new Date().getFullYear();
 
   todosByStatus: { [key in TodoStatus]: Todo[] } = {
@@ -192,12 +194,31 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   onAddTodo(addTodoForm?: NgForm): void {
+    console.log('Selected Project ID at start of onAddTodo:', this.selectedProjectIdForNewTodo);
     if (addTodoForm && !addTodoForm.valid) {
       alert('Please fill all required fields correctly.');
       return;
     }
 
-    this.todoService.addTodo(this.newTodo).subscribe({
+    const currentUser = this.authService.getCurrentUserValue();
+    if (!currentUser || !currentUser.id) {
+      alert('User not authenticated or user ID is missing. Cannot add todo.');
+      console.error('User not authenticated or user ID is missing for adding todo.');
+      return;
+    }
+
+    if (this.selectedProjectIdForNewTodo === null) {
+      alert('Please select a project for the new todo.');
+      return;
+    }
+
+    const todoPayload: Omit<Todo, 'id'> = {
+      ...this.newTodo,
+      user: { id: currentUser.id },
+      project: { id: this.selectedProjectIdForNewTodo },
+    };
+
+    this.todoService.addTodo(todoPayload).subscribe({
       next: (addedTodo) => {
         alert('Todo item added successfully!');
         this.loadTodos();
@@ -211,6 +232,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
           dueDate: '',
           priority: 'LOW',
         };
+        this.selectedProjectIdForNewTodo = null;
         if (addTodoForm) {
           addTodoForm.resetForm({ status: 'PENDING' });
         }
@@ -332,6 +354,17 @@ export class TodolistComponent implements OnInit, OnDestroy {
   openAddTodoModal(): void {
     this.pendingSubtasksForNewTodo = []; // Clear pending subtasks when modal is opened
     this.newTaskForAddModal = '';
+    this.selectedProjectIdForNewTodo = null;
+    this.newTodo = {
+      title: '',
+      description: '',
+      status: 'PENDING',
+      remarks: '',
+      dateStart: '',
+      dateEnd: '',
+      dueDate: '',
+      priority: 'LOW',
+    };
   }
 
   selectTodoForEdit(todo: Todo): void {
@@ -396,9 +429,9 @@ export class TodolistComponent implements OnInit, OnDestroy {
   deleteTodo(id: number): void {
     if (!id) return;
     if (confirm('Are you sure you want to delete this todo?')) {
-      this.todoService.deleteTodo(id).subscribe({
-        next: () => {
-          alert('Todo deleted successfully!');
+      this.todoService.deleteTodo(id).subscribe({ // The service now returns Observable<{ message: string }>
+        next: (response) => { // response is { message: "..." }
+          alert(response.message || 'Todo deleted successfully!');
           this.loadTodos();
         },
         error: (err) => {

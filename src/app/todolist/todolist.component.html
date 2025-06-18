@@ -424,17 +424,29 @@
             <div class="row">
               <!-- Project Name Location ---------------------------------------------------------------------------------->
               <div class="col-md-6 mb-3">
-                <label for="addStatus" class="form-label"
-                  >Project Name (For addition to database field)</label
+                <label for="addTodoProject" class="form-label">Project</label>
+                <select
+                  class="form-select"
+                  id="addTodoProject"
+                  name="addTodoProject"
+                  [(ngModel)]="selectedProjectIdForNewTodo"
+                  required
+                  #todoProject="ngModel"
                 >
-                <select class="form-select" id="addStatus" name="status">
-                  <option
-                    *ngFor="let project of projects"
-                    [value]="project.project"
-                  >
+                  <option [ngValue]="null" disabled>Select a project</option>
+                  <option *ngFor="let project of projects" [value]="project.id">
                     {{ project.project }}
                   </option>
                 </select>
+                <div
+                  *ngIf="
+                    todoProject.invalid &&
+                    (todoProject.dirty || todoProject.touched)
+                  "
+                  class="text-danger"
+                >
+                  Project is required.
+                </div>
               </div>
               <!-- Project Name Location ------------------------------------------------------------------------------------>
 
@@ -757,21 +769,29 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="editProjectName" class="form-label">
-                  Project Name (For addition to database field)
-                </label>
+                <label for="editTodoProject" class="form-label">Project</label>
                 <select
                   class="form-select"
-                  id="editProjectName"
-                  name="projectName"
+                  id="editTodoProject"
+                  name="editTodoProject"
+                  [(ngModel)]="editTodoData.project!.id"
+                  required
+                  #editProject="ngModel"
                 >
-                  <option
-                    *ngFor="let project of projects"
-                    [value]="project.project"
-                  >
+                  <option [ngValue]="null" disabled>Select a project</option>
+                  <option *ngFor="let project of projects" [value]="project.id">
                     {{ project.project }}
                   </option>
                 </select>
+                <div
+                  *ngIf="
+                    editProject.invalid &&
+                    (editProject.dirty || editProject.touched)
+                  "
+                  class="text-danger"
+                >
+                  Project is required.
+                </div>
               </div>
               <div class="col-md-6 mb-3">
                 <div
