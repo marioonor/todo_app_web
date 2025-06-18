@@ -10,6 +10,7 @@ import { Subscription, forkJoin, of, Observable, concat } from 'rxjs';
 import {
   CdkDragDrop,
   DragDropModule,
+  CdkDragEnd,
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
@@ -19,6 +20,10 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Project } from '../models/project.models';
 import { ProjectService } from '../service/project.service';
 import { Subtasks } from '../models/subtasks.model';
+
+interface DraggableTodo extends Todo {
+  isDraggable?: boolean;
+}
 
 @Component({
   selector: 'app-todolist',
@@ -58,7 +63,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
 
   currentView: 'kanban' | 'simpleList' = 'kanban';
 
-  todos: Todo[] = [];
+  todos: DraggableTodo[] = [];
   isLoading: boolean = false;
   errorMessage: string | null = null;
 
@@ -77,15 +82,15 @@ export class TodolistComponent implements OnInit, OnDestroy {
 
   currentYear: number = new Date().getFullYear();
 
-  todosByStatus: { [key in TodoStatus]: Todo[] } = {
+  todosByStatus: { [key in TodoStatus]: DraggableTodo[] } = {
     PENDING: [],
     IN_PROGRESS: [],
     COMPLETED: [],
     CANCELLED: [],
   };
 
-  editTodoData: Todo | null = null;
-  addTodoData: Todo | null = null;
+  editTodoData: DraggableTodo | null = null;
+  addTodoData: DraggableTodo | null = null;
 
   userFirstName: string = 'Admin';
   private userAuthSubscription: Subscription | undefined;
@@ -116,7 +121,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     );
   }
 
-  filteredItems(status: string): Todo[] {
+  filteredItems(status: string): DraggableTodo[] {
     return this.todos.filter((todo) => {
       const matchesStatus = status === 'ALL' || todo.status === status;
       const search = this.searchText.trim().toLowerCase();
@@ -144,7 +149,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     this.errorMessage = null;
     this.todoService.getTodos().subscribe({
       next: (data) => {
-        this.todos = this.deduplicateTodos(data);
+        this.todos = this.deduplicateTodos(data).map(t => ({ ...t, isDraggable: false }));
         this.isLoading = false;
         this.organizeTodos();
       },
@@ -155,7 +160,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     });
   }
 
-  deduplicateTodos(todos: Todo[]): Todo[] {
+  deduplicateTodos(todos: Todo[]): DraggableTodo[] {
     return Array.from(new Map(todos.map((todo) => [todo.id, todo])).values());
   }
 
@@ -372,7 +377,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     };
   }
 
-  selectTodoForEdit(todo: Todo): void {
+  selectTodoForEdit(todo: DraggableTodo): void {
     this.editTodoData = {
       ...todo,
       dateStart: this.formatDateForInput(todo.dateStart),
@@ -409,8 +414,11 @@ export class TodolistComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const { isDraggable, ...todoDataForBackend } = this.editTodoData;
+    const updatePayload: Todo = todoDataForBackend;
+
     this.todoService
-      .updateTodo(this.editTodoData.id, this.editTodoData)
+      .updateTodo(this.editTodoData.id, updatePayload)
       .subscribe({
         next: (updatedTodo) => {
           alert('Todo item updated successfully!');
@@ -454,7 +462,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     this.router.navigate(['']);
   }
 
-  onDrop(event: CdkDragDrop<Todo[]>): void {
+  onDrop(event: CdkDragDrop<DraggableTodo[]>): void {
     const previousContainerData = event.previousContainer.data;
     const currentContainerData = event.container.data;
 
@@ -505,13 +513,14 @@ export class TodolistComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateAndPersistOrder(list: Todo[]): Observable<any> {
-    const updateObservables: Observable<Todo | null>[] = [];
+  private updateAndPersistOrder(list: DraggableTodo[]): Observable<any> {
+    const updateObservables: Observable<DraggableTodo | null>[] = [];
 
-    list.forEach((todo, index) => {
+    list.forEach((todo: DraggableTodo, index: number) => {
       if (todo.id !== undefined) {
+        const { isDraggable, ...todoDataForBackend } = todo;
         const updatedTodoPayload: Todo = {
-          ...todo,
+          ...todoDataForBackend,
           order: index,
         };
 
@@ -542,7 +551,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   organizeTodos(): void {
-    const newTodosByStatus: { [key in TodoStatus]: Todo[] } = {
+    const newTodosByStatus: { [key in TodoStatus]: DraggableTodo[] } = {
       PENDING: [],
       IN_PROGRESS: [],
       COMPLETED: [],
@@ -559,7 +568,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     this.todosByStatus = newTodosByStatus;
   }
 
-  getTodosByStatus(status: TodoStatus): Todo[] {
+  getTodosByStatus(status: TodoStatus): DraggableTodo[] {
     return this.todosByStatus[status] || [];
   }
 
@@ -675,6 +684,21 @@ export class TodolistComponent implements OnInit, OnDestroy {
         return 'Cancelled';
       default:
         return status;
+    }
+  }
+
+  enableDrag(clickedTodo: DraggableTodo): void {
+    this.todos.forEach(todo => {
+      if (todo !== clickedTodo) {
+        todo.isDraggable = false;
+      }
+    });
+    clickedTodo.isDraggable = true;
+  }
+
+  disableDragOnEnd(event: CdkDragEnd<DraggableTodo>): void {
+    if (event.source.data) {
+      event.source.data.isDraggable = false;
     }
   }
 }

@@ -14,7 +14,7 @@ export class HeaderComponent {
   imagePath: string = 'assets/images/image.png';
   imageIconPath: string = 'assets/images/usericon.png';
   imageLogoutPath: string = 'assets/images/logout.png';
-  userFirstName: string = "Angel's Burger Dashboard";
+  userFirstName: string = "Hello, Angel";
 
   constructor(
       private router: Router,

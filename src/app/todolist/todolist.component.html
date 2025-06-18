@@ -107,7 +107,7 @@
         *ngFor="let status of connectedLists"
       >
         <div
-          class="card h-100"
+          class="card"
           *ngIf="currentView === 'kanban'"
           style="
             margin-left: 10px;
@@ -126,7 +126,7 @@
           </div>
           <div
             class="card-body d-flex flex-column gap-3 hide-scrollbar"
-            style="min-height: 400px; overflow-y: auto"
+            style="min-height: 250px; overflow-y: auto"
             cdkDropList
             [id]="status"
             [cdkDropListData]="getTodosByStatus(status)"
@@ -139,8 +139,15 @@
             <div>
               <div class="todo-column">
                 <ng-container *ngFor="let todo of filteredItems(status)">
-                  <div class="card shadow-sm" cdkDrag>
-                    <div class="card-body p-3">
+                  <div
+                    class="card shadow-sm mb-2"
+                    cdkDrag
+                    [cdkDragData]="todo"
+                    [cdkDragDisabled]="!todo.isDraggable"
+                    (dblclick)="enableDrag(todo)"
+                    (cdkDragEnded)="disableDragOnEnd($event)"
+                  >
+                    <div class="card-body pt-3 px-3 pb-2">
                       <h5 class="card-title">{{ todo.title }}</h5>
                       <p class="card-text">{{ todo.description }}</p>
                       <p class="mb-1">
@@ -305,7 +312,7 @@
                   {{ getStatusLabel(todo.status) }}
                 </span>
               </td>
-              <td class="text-nowrap">{{ todo.remarks }}</td>
+              <td>{{ todo.remarks }}</td>
               <td class="text-nowrap">
                 {{ todo.dateStart | date : "yyyy-MM-dd" }}
               </td>
@@ -380,7 +387,7 @@
         <div class="modal-body">
           <form (ngSubmit)="onAddTodo(addTodoForm)" #addTodoForm="ngForm">
             <div class="mb-3">
-              <label for="addTitle" class="form-label">Task Name</label>
+              <label for="addTitle" class="form-label">Task Name:</label>
               <input
                 type="text"
                 class="form-control"
@@ -405,7 +412,9 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="addDescription" class="form-label">Description</label>
+              <label for="addDescription" class="form-label"
+                >Description:</label
+              >
               <textarea
                 class="form-control"
                 id="addDescription"
@@ -424,7 +433,7 @@
             <div class="row">
               <!-- Project Name Location ---------------------------------------------------------------------------------->
               <div class="col-md-6 mb-3">
-                <label for="addTodoProject" class="form-label">Project</label>
+                <label for="addTodoProject" class="form-label">Project:</label>
                 <select
                   class="form-select"
                   id="addTodoProject"
@@ -459,7 +468,7 @@
                   Status is required.
                 </div>
                 <label for="addRemarks" class="form-label"
-                  >Remarks (Optional)</label
+                  >Remarks (Optional):</label
                 >
                 <textarea
                   class="form-control"
@@ -472,7 +481,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="addDateStart" class="form-label">Start Date</label>
+                <label for="addDateStart" class="form-label">Start Date:</label>
                 <input
                   type="date"
                   class="form-control"
@@ -490,7 +499,7 @@
               </div>
               <div class="col-md-6 mb-3">
                 <label for="addDateEnd" class="form-label"
-                  >Target End Date</label
+                  >Target End Date:</label
                 >
                 <input
                   type="date"
@@ -511,7 +520,7 @@
             <div class="row">
               <!-- Added field (Start)-->
               <div class="col-md-6 mb-3">
-                <label for="addDueDate" class="form-label">Due Date</label>
+                <label for="addDueDate" class="form-label">Due Date:</label>
                 <input
                   type="date"
                   class="form-control"
@@ -525,7 +534,7 @@
               <!-- Project Name Location -->
               <!-- Added field (Start)-->
               <div class="col-md-6 mb-3">
-                <label for="addStatus" class="form-label">Status</label>
+                <label for="addStatus" class="form-label">Status:</label>
                 <select
                   class="form-select"
                   id="addStatus"
@@ -552,9 +561,7 @@
             <!-- Subtasks Field -->
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for=""
-                  >Add Subtasks: (For addition to database field)</label
-                >
+                <label for="">Add Subtasks:</label>
                 <ul
                   class="list-unstyled"
                   style="display: flex; flex-direction: column; gap: 5px"
@@ -596,9 +603,7 @@
               <!-- Priority Field -->
 
               <div class="col-md-6 mb-3">
-                <label for="addPriority" class="form-label">
-                  Priority (For addition to database field)
-                </label>
+                <label for="addPriority" class="form-label"> Priority: </label>
                 <select
                   class="form-select"
                   id="addPriority"
@@ -757,7 +762,7 @@
             <input type="hidden" name="id" [(ngModel)]="editTodoData.id" />
 
             <div class="mb-3">
-              <label for="editTitle" class="form-label">Title</label>
+              <label for="editTitle" class="form-label">Task Name:</label>
               <input
                 type="text"
                 class="form-control"
@@ -785,7 +790,7 @@
             </div>
             <div class="mb-3">
               <label for="editDescription" class="form-label"
-                >Description</label
+                >Description:</label
               >
               <textarea
                 class="form-control"
@@ -815,7 +820,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="editTodoProject" class="form-label">Project</label>
+                <label for="editTodoProject" class="form-label">Project:</label>
                 <select
                   class="form-select"
                   id="editTodoProject"
@@ -851,7 +856,7 @@
                   Status is required.
                 </div>
                 <label for="editRemarks" class="form-label"
-                  >Remarks (Optional)</label
+                  >Remarks (Optional):</label
                 >
                 <input
                   type="text"
@@ -864,7 +869,9 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="editDateStart" class="form-label">Start Date</label>
+                <label for="editDateStart" class="form-label"
+                  >Start Date:</label
+                >
                 <input
                   type="date"
                   class="form-control"
@@ -882,7 +889,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label for="editDateEnd" class="form-label">End Date</label>
+                <label for="editDateEnd" class="form-label">End Date:</label>
                 <input
                   type="date"
                   class="form-control"
@@ -902,7 +909,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="editDueDate" class="form-label">Due Date</label>
+                <label for="editDueDate" class="form-label">Due Date:</label>
                 <input
                   type="date"
                   class="form-control"
@@ -920,7 +927,7 @@
                 />
               </div>
               <div class="col-md-6 mb-3">
-                <label for="editStatus" class="form-label">Status</label>
+                <label for="editStatus" class="form-label">Status:</label>
                 <select
                   class="form-select"
                   id="editStatus"
@@ -945,9 +952,7 @@
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for=""
-                  >Add Subtasks: (For addition to database field)</label
-                >
+                <label for="">Add Subtasks:</label>
                 <ul
                   class="list-unstyled"
                   style="display: flex; flex-direction: column; gap: 5px"
@@ -986,9 +991,7 @@
                 <!-- Added field (End)----------------------------------------------------------------------->
               </div>
               <div class="col-md-6 mb-3">
-                <label for="editPriority" class="form-label">
-                  Priority (For addition to database field)
-                </label>
+                <label for="editPriority" class="form-label"> Priority: </label>
                 <select
                   class="form-select"
                   id="editPriority"
