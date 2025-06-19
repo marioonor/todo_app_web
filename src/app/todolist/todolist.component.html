@@ -13,7 +13,8 @@
   <div
     class="container-fluid"
     style="
-      background-color: #6aa7e4;
+      /* background-color: #6aa7e4; */
+      background-color: #fafcff;
       padding-top: 10px;
       overflow-y: auto;
       padding-bottom: 20px;
@@ -26,7 +27,7 @@
       <!-- Display button selection -->
       <div
         class="d-flex justify-content-between align-items-center"
-        style="color: white; margin: 20px 0"
+        style="color: rgb(0, 0, 0); margin: 20px 0"
       >
         <div class="btn-group" style="margin-left: 20px">
           <div
@@ -267,11 +268,15 @@
                             *ngFor="let statOpt of connectedLists"
                             [disabled]="statOpt === todo.status"
                             type="button"
-                            style="padding: 0;"
+                            style="padding: 0"
                             class="btn btn-sm d-block w-100 mb-1 text-start status-option-button"
                             (click)="updateTodoStatusQuick(todo, statOpt)"
-                            [style.--status-accent-color]="getStatusAccentColor(statOpt)"
-                            [style.--status-contrast-color]="getStatusContrastColorForAccent(statOpt)"
+                            [style.--status-accent-color]="
+                              getStatusAccentColor(statOpt)
+                            "
+                            [style.--status-contrast-color]="
+                              getStatusContrastColorForAccent(statOpt)
+                            "
                           >
                             <img
                               [src]="getStatusImages(statOpt)"
