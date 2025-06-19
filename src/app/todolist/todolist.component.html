@@ -26,7 +26,7 @@
       <!-- Display button selection -->
       <div
         class="d-flex justify-content-between align-items-center"
-        style="color: white; margin: 20px 0;"
+        style="color: white; margin: 20px 0"
       >
         <div class="btn-group" style="margin-left: 20px">
           <div
@@ -170,7 +170,9 @@
                         >
                       </p>
 
-                      <div class="mt-2">
+                      <div
+                        class="d-flex justify-content-between align-items-center mt-2"
+                      >
                         <span
                           class="badge p-2"
                           [ngClass]="
@@ -193,33 +195,95 @@
                         </span>
                       </div>
 
-                      <div class="d-flex justify-content-between">
-                        <button
-                          type="button"
-                          class="btn btn-sm"
-                          style="padding: 5px 10px"
-                          data-bs-toggle="modal"
-                          data-bs-target="#editTodoModal"
-                          (click)="selectTodoForEdit(todo)"
+                      <div
+                        class="d-flex justify-content-end align-items-center mt-2"
+                      >
+                        <div>
+                          <button
+                            type="button"
+                            class="btn btn-sm me-1"
+                            style="padding: 2px 5px"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editTodoModal"
+                            (click)="selectTodoForEdit(todo)"
+                            title="Edit Task"
+                          >
+                            <img
+                              [src]="edit"
+                              style="width: 18px; height: 18px"
+                              alt="Edit"
+                            />
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm me-1"
+                            style="padding: 2px 5px"
+                            (click)="deleteTodo(todo.id!)"
+                            title="Delete Task"
+                          >
+                            <img
+                              [src]="delete"
+                              style="width: 18px; height: 18px"
+                              alt="Delete"
+                            />
+                          </button>
+                        </div>
+                        <!-- Quick Status Change Handle -->
+                        <div
+                          (mouseenter)="showQuickStatusOptions(todo, $event)"
+                          (mouseleave)="
+                            startHideQuickStatusPopoverTimer(todo.id!)
+                          "
+                          title="Quick change status"
                         >
-                          <img
-                            [src]="edit"
-                            style="width: auto; height: 20px"
-                            alt=""
-                          />
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-sm"
-                          style="padding: 5px 10px"
-                          (click)="deleteTodo(todo.id!)"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            class="bi bi-three-dots-vertical"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          *ngIf="
+                            quickStatusPopover.todoId === todo.id &&
+                            quickStatusPopover.visible
+                          "
+                          class="status-options-popover"
+                          [style.top]="quickStatusPopover.top"
+                          [style.left]="quickStatusPopover.left"
+                          (mouseenter)="cancelHideQuickStatusPopoverTimer()"
+                          (mouseleave)="
+                            startHideQuickStatusPopoverTimer(todo.id!)
+                          "
+                          (click)="$event.stopPropagation()"
                         >
-                          <img
-                            [src]="delete"
-                            style="width: auto; height: 20px"
-                            alt=""
-                          />
-                        </button>
+                          <button
+                            *ngFor="let statOpt of connectedLists"
+                            [disabled]="statOpt === todo.status"
+                            type="button"
+                            style="padding: 0;"
+                            class="btn btn-sm d-block w-100 mb-1 text-start status-option-button"
+                            (click)="updateTodoStatusQuick(todo, statOpt)"
+                            [style.--status-accent-color]="getStatusAccentColor(statOpt)"
+                            [style.--status-contrast-color]="getStatusContrastColorForAccent(statOpt)"
+                          >
+                            <img
+                              [src]="getStatusImages(statOpt)"
+                              [alt]="statOpt"
+                              style="
+                                width: 20px;
+                                height: 20px;
+                                vertical-align: middle;
+                              "
+                            />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -354,6 +418,9 @@
     </div>
 
     <!-- Simple List View -->
+
+    <!-- Quick Status Change Popover (Single instance for the component) -->
+    <!-- End Quick Status Change Popover -->
   </div>
 
   <!-- Add Task Modal -->

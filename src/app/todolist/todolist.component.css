@@ -135,3 +135,13 @@
   border-radius: 4px;
 }
 
+.status-options-popover .status-option-button:not(:disabled):hover {
+  background-color: var(--status-accent-color, #0d6efd); /* Fallback to Bootstrap primary */
+  border-color: var(--status-accent-color, #0d6efd);   /* Fallback */
+  color: var(--status-contrast-color, #fff); /* Fallback for text/icon color */
+}
+
+.status-options-popover .status-option-button:not(:disabled):hover img {
+  /* If you want the image to change color, and it's an SVG, you can use fill. Otherwise, filter might work for PNGs. */
+  /* For PNGs, a common technique is to have two versions of the icon (e.g., one dark, one light) and swap them, or use CSS filters. */
+}
