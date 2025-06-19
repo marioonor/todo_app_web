@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private authApiUrl = `${environment.apiUrl}/auth`;
-  private currentUserKey = 'currentUser';
+  // private currentUserKey = 'currentUser';
+  private static readonly CURRENT_USER_KEY = 'currentUser';
 
   private currentUserSubject: BehaviorSubject<UserResponse | null>;
   public currentUser: Observable<UserResponse | null>;
@@ -18,7 +19,7 @@ export class AuthService {
   public redirectUrl: string | null = null;
 
   constructor(private http: HttpClient, private router: Router) {
-    const storedUser = localStorage.getItem(this.currentUserKey);
+    const storedUser = localStorage.getItem(AuthService.CURRENT_USER_KEY);
     this.currentUserSubject = new BehaviorSubject<UserResponse | null>(
       storedUser ? JSON.parse(storedUser) : null
     );
@@ -40,20 +41,33 @@ export class AuthService {
       .pipe(
         tap((user) => {
           if (user && user.token) {
-            localStorage.setItem(this.currentUserKey, JSON.stringify(user));
+            localStorage.setItem(
+              AuthService.CURRENT_USER_KEY,
+              JSON.stringify(user)
+            );
             this.currentUserSubject.next(user);
             if (!user.id && environment.production === false) {
-              console.warn('AuthService: Login successful and token received, but user.id is missing in the response. Full user details may not be available. Backend should ideally provide a complete UserResponse including user ID.', user);
+              console.warn(
+                'AuthService: Login successful and token received, but user.id is missing in the response. Full user details may not be available. Backend should ideally provide a complete UserResponse including user ID.',
+                user
+              );
             }
           } else {
-            console.error('AuthService: Login response did not contain a user object or a token. User authentication state not updated.', user);
+            console.error(
+              'AuthService: Login response did not contain a user object or a token. User authentication state not updated.',
+              user
+            );
           }
         })
       );
   }
 
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
   logout(): void {
-    localStorage.removeItem(this.currentUserKey);
+    localStorage.removeItem(AuthService.CURRENT_USER_KEY);
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }

@@ -105,20 +105,12 @@
                 [(ngModel)]="credentials.password"
                 required
                 #passwordInput="ngModel"
-                style="width: 300px; border: 0"
+                style="width: 341px; border: 0"
                 placeholder="Password"
                 [ngClass]="{
                   'is-invalid': loginForm.submitted && passwordInput.invalid
                 }"
               />
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                style="border: 0cap"
-                (click)="togglePassword()"
-              >
-                <i [class]="showpassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-              </button>
               <div
                 *ngIf="loginForm.submitted && passwordInput.invalid"
                 class="invalid-feedback"
@@ -134,7 +126,7 @@
                 type="submit"
                 class="btn btn-primary btn-block"
                 [disabled]="loginForm.invalid"
-                style="width: 300px"
+                style="width: 341px"
                 (click)="togglePassword()"
               >
                 Log In
