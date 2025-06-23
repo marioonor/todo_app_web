@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private authApiUrl = `${environment.apiUrl}/auth`;
-  // private currentUserKey = 'currentUser';
   private static readonly CURRENT_USER_KEY = 'currentUser';
 
   private currentUserSubject: BehaviorSubject<UserResponse | null>;
