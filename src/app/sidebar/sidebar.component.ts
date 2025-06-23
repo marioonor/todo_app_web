@@ -65,9 +65,9 @@ export class SidebarComponent {
       return;
     }
 
-    const projectPayload: Omit<Project, 'id'> = {
+    const projectPayload: { project: string; userId: number | null } = {
       project: trimmedProjectName,
-      user: { id: currentUser.id },
+      userId: currentUser.id,
     };
 
     this.projectService.addProject(projectPayload).subscribe({

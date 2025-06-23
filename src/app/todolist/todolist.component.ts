@@ -2,7 +2,7 @@ import { SubtasksService } from './../service/subtasks.service';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core'; // Added HostListener
 import { Router } from '@angular/router';
 import { TodoService } from '../service/todo.service';
-import { Todo, TodoStatus } from '../models/todo.models';
+import { Todo, TodoPayload, TodoStatus } from '../models/todo.models';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../service/auth.service';
@@ -208,12 +208,26 @@ export class TodolistComponent implements OnInit, OnDestroy {
     // Optimistically update UI
     // todo.status = newStatus; // This mutates the original object directly
     // this.organizeTodos(); // Re-organize immediately
-
-    const todoToUpdate = { ...todo, status: newStatus };
+    console.log('Updating todo:', todo);
+    const todoToUpdate = { ...todo, status: newStatus }; // todo can contain user and project objects from backend GET response
     // Exclude isDraggable if it's only a UI property and not part of your backend Todo model
     const { isDraggable, ...todoDataForBackend } = todoToUpdate;
-    const updatePayload: Todo = todoDataForBackend;
+    
+    // Ensure userId and projectId are present for TodoPayload
+    if (todo.userId === undefined || todo.projectId === undefined) {
+      console.error('Cannot update todo status: User ID or Project ID is missing.');
+      this.closeQuickStatusPopover();
+      return;
+    }
 
+    // Exclude 'user' and 'project' objects from the payload as the backend DTO (TodoRequest) does not expect them.
+    const { id, user, project, ...cleanedTodoData } = todoDataForBackend; // Exclude 'id' field
+    const updatePayload: TodoPayload = { // Explicitly type as TodoPayload
+      ...cleanedTodoData, // Spreads all properties from Todo, excluding user and project objects
+      userId: todo.userId,    // Explicitly ensure userId is a number
+      projectId: todo.projectId // Explicitly ensure projectId is a number
+    };
+    
     this.todoService.updateTodo(todo.id, updatePayload).subscribe({
       next: () => {
         console.log('Todo status updated successfully via quick change');
@@ -366,10 +380,10 @@ export class TodolistComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const todoPayload: Omit<Todo, 'id'> = {
+    const todoPayload: TodoPayload = {
       ...this.newTodo,
-      user: { id: currentUser.id },
-      project: { id: this.selectedProjectIdForNewTodo },
+      userId: currentUser.id, // Send userId directly
+      projectId: this.selectedProjectIdForNewTodo, // Send projectId directly
     };
 
     this.todoService.addTodo(todoPayload).subscribe({
@@ -558,8 +572,26 @@ export class TodolistComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const { isDraggable, ...todoDataForBackend } = this.editTodoData;
-    const updatePayload: Todo = todoDataForBackend;
+    // Add a guard clause to ensure userId and projectId are present
+    if (this.editTodoData.userId === undefined || this.editTodoData.projectId === undefined) {
+      alert('Cannot update todo without user or project information.');
+      return;
+    }
+
+    // Construct the payload explicitly to match the TodoPayload interface
+    const updatePayload: TodoPayload = { // Explicitly type as TodoPayload
+      title: this.editTodoData.title,
+      description: this.editTodoData.description,
+      status: this.editTodoData.status,
+      remarks: this.editTodoData.remarks,
+      dateStart: this.editTodoData.dateStart,
+      dateEnd: this.editTodoData.dateEnd,
+      dueDate: this.editTodoData.dueDate,
+      priority: this.editTodoData.priority,
+      order: this.editTodoData.order,
+      userId: this.editTodoData.userId, // Now guaranteed to be a number
+      projectId: this.editTodoData.projectId, // Now guaranteed to be a number
+    };
 
     this.todoService.updateTodo(this.editTodoData.id, updatePayload).subscribe({
       next: () => {
@@ -658,14 +690,24 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   private updateAndPersistOrder(list: DraggableTodo[]): Observable<any> {
-    const updateObservables: Observable<DraggableTodo | null>[] = [];
+    const updateObservables: Observable<Todo>[] = [];
 
     list.forEach((todo: DraggableTodo, index: number) => {
-      if (todo.id !== undefined) {
-        const { isDraggable, ...todoDataForBackend } = todo;
-        const updatedTodoPayload: Todo = {
-          ...todoDataForBackend,
-          order: index,
+      // Ensure todo.id, userId, and projectId are defined before proceeding
+      if (todo.id !== undefined && todo.userId !== undefined && todo.projectId !== undefined) {
+        // Explicitly construct TodoPayload to satisfy type requirements
+        const updatedTodoPayload: TodoPayload = {
+          title: todo.title,
+          description: todo.description,
+          status: todo.status,
+          remarks: todo.remarks,
+          dateStart: todo.dateStart,
+          dateEnd: todo.dateEnd,
+          dueDate: todo.dueDate,
+          priority: todo.priority,
+          order: index, // The new order
+          userId: todo.userId, // Guaranteed to be number here
+          projectId: todo.projectId, // Guaranteed to be number here
         };
 
         if (todo.order !== index) {
@@ -828,6 +870,16 @@ export class TodolistComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Helper method to map priority for display and class application
+  getMappedPriority(priority: string): 'LOW' | 'NORMAL' | 'IMPORTANT' | 'CRITICAL' {
+    if (priority === 'HIGH') {
+      return 'CRITICAL';
+    }
+    if (priority === 'MEDIUM') {
+      return 'NORMAL';
+    }
+    return priority as 'LOW' | 'NORMAL' | 'IMPORTANT' | 'CRITICAL';
+  }
   Pending: string = 'assets/images/pending.png';
   InProgress: string = 'assets/images/inprogress.png';
   Completed: string = 'assets/images/completed.png';

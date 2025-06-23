@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Todo, TodoStatus } from '../models/todo.models';
+import { Todo, TodoStatus, TodoPayload } from '../models/todo.models';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -20,14 +20,14 @@ export class TodoService {
     );
   }
 //-------------------------------------------------------
-  addTodo(todo: Omit<Todo, 'id'>): Observable<Todo> {
+  addTodo(todo: TodoPayload): Observable<Todo> {
     return this.http.post<Todo>(this.todoApiUrl, todo).pipe(
       tap((newTodo) => console.log('Added todo:', newTodo)),
       catchError(this.handleError)
     );
   }
 //-------------------------------------------------------
-  updateTodo(id: number, todo: Todo): Observable<Todo> {
+  updateTodo(id: number, todo: TodoPayload): Observable<Todo> {
     return this.http.put<Todo>(`${this.todoApiUrl}/${id}`, todo).pipe(
       tap((updatedTodo) => console.log('Updated todo:', updatedTodo)),
       catchError(this.handleError)

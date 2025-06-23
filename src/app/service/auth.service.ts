@@ -40,6 +40,7 @@ export class AuthService {
       .post<UserResponse>(`${this.authApiUrl}/login`, credentials)
       .pipe(
         tap((user) => {
+          console.log('[AuthService login] User response from backend:', user);
           if (user && user.token) {
             localStorage.setItem(
               AuthService.CURRENT_USER_KEY,
@@ -63,7 +64,21 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    const storedUser = localStorage.getItem(AuthService.CURRENT_USER_KEY);
+    if (storedUser) {
+      try {
+        const user: UserResponse = JSON.parse(storedUser);
+        // Add a log here to see the parsed user and its token
+        console.log('[AuthService getToken] Parsed user from localStorage:', user);
+        return user?.token || null; // Use optional chaining for safety
+      } catch (e) {
+        console.error('[AuthService getToken] Error parsing user from localStorage:', e);
+        localStorage.removeItem(AuthService.CURRENT_USER_KEY); // Clear corrupted item
+        return null;
+      }
+    }
+    console.log('[AuthService getToken] No stored user found in localStorage.');
+    return null;
   }
 
   logout(): void {

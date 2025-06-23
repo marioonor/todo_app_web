@@ -177,22 +177,10 @@
                         <span
                           class="badge p-2"
                           [ngClass]="
-                            getPriorityClass(
-                              todo.priority === 'HIGH'
-                                ? 'CRITICAL'
-                                : todo.priority === 'MEDIUM'
-                                ? 'NORMAL'
-                                : todo.priority
-                            )
+                            getPriorityClass(getMappedPriority(todo.priority))
                           "
                         >
-                          {{
-                            todo.priority === "HIGH"
-                              ? "CRITICAL"
-                              : todo.priority === "MEDIUM"
-                              ? "NORMAL"
-                              : todo.priority
-                          }}
+                          {{ getMappedPriority(todo.priority) }}
                         </span>
                       </div>
 
