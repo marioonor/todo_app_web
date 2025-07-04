@@ -62,6 +62,10 @@ export class AuthService {
       );
   }
 
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem(AuthService.CURRENT_USER_KEY);
+  }
+
   getToken(): string | null {
     const storedUser = localStorage.getItem(AuthService.CURRENT_USER_KEY);
     if (storedUser) {
