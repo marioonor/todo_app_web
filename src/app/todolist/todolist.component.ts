@@ -322,6 +322,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     return Array.from(new Map(todos.map((todo) => [todo.id, todo])).values());
   }
 
+//---------------------------------------------------------------------------
   loadProjects(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -336,6 +337,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       },
     });
   }
+//----------------------------------------------------------------------------
 
   loadSubtasks(): void {
     this.isLoading = true;
@@ -533,6 +535,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       dueDate: '',
       priority: 'LOW',
     };
+    this.loadProjects();
   }
 
   selectTodoForEdit(todo: DraggableTodo): void {
