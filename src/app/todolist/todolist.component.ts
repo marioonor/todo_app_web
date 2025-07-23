@@ -1,5 +1,5 @@
 import { SubtasksService } from './../service/subtasks.service';
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core'; // Added HostListener
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { TodoService } from '../service/todo.service';
 import { Todo, TodoPayload, TodoStatus } from '../models/todo.models';
@@ -14,7 +14,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { catchError, tap } from 'rxjs/operators'; // Added tap
+import { catchError, tap } from 'rxjs/operators';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Project } from '../models/project.models';
@@ -101,7 +101,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     visible: false,
     top: '0px',
     left: '0px',
-    todoId: null as number | null, // To track which todo's popover is open
+    todoId: null as number | null,
   };
   quickStatusPopoverHideTimer: any = null;
 
@@ -133,7 +133,6 @@ export class TodolistComponent implements OnInit, OnDestroy {
   onDocumentClickForQuickStatus(event: MouseEvent): void {
     if (this.quickStatusPopover.visible) {
       const popoverElement = document.querySelector('.status-options-popover');
-      // Check if the click target is part of any move-status-handle
       const clickedOnAHandle = Array.from(
         document.querySelectorAll('.move-status-handle')
       ).some((handle) => handle.contains(event.target as Node));
@@ -149,31 +148,28 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   showQuickStatusOptions(todo: DraggableTodo, event: MouseEvent): void {
-    event.stopPropagation(); // Prevent document click from closing immediately
+    event.stopPropagation();
 
     this.cancelHideQuickStatusPopoverTimer();
 
-    // If already visible for this exact todo, do nothing further (it's already positioned)
     if (
       this.quickStatusPopover.todoId === todo.id &&
       this.quickStatusPopover.visible
     ) {
       return;
     }
-    this.quickStatusPopover.todoId = todo.id!; // Assert todo.id is not null
+    this.quickStatusPopover.todoId = todo.id!;
 
     const handleElement = event.currentTarget as HTMLElement;
     const rect = handleElement.getBoundingClientRect();
 
-    let topPosition = rect.bottom + window.scrollY + 2; // 2px gap below handle
+    let topPosition = rect.bottom + window.scrollY + 2;
     let leftPosition = rect.left + window.scrollX;
 
     this.quickStatusPopover.top = `${topPosition}px`;
     this.quickStatusPopover.left = `${leftPosition}px`;
     this.quickStatusPopover.visible = true;
 
-    // Optional: Add boundary checks here after a brief timeout to allow rendering
-    // This is a simplified version. For robust boundary checks, consider a library or more complex logic.
     setTimeout(() => {
       const popoverEl = document.querySelector('.status-options-popover');
       if (popoverEl) {
@@ -187,7 +183,6 @@ export class TodolistComponent implements OnInit, OnDestroy {
           popoverRect.bottom > window.innerHeight &&
           rect.top > popoverRect.height
         ) {
-          // If not enough space below, and enough space above, show above
           this.quickStatusPopover.top = `${
             rect.top + window.scrollY - popoverRect.height - 2
           }px`;
@@ -198,53 +193,46 @@ export class TodolistComponent implements OnInit, OnDestroy {
 
   updateTodoStatusQuick(todo: DraggableTodo, newStatus: TodoStatus): void {
     if (!todo || todo.id === undefined) {
-      // Check for undefined id as well
       console.error('Todo or Todo ID is undefined in updateTodoStatusQuick');
       this.closeQuickStatusPopover();
       return;
     }
 
     const originalStatus = todo.status;
-    // Optimistically update UI
-    // todo.status = newStatus; // This mutates the original object directly
-    // this.organizeTodos(); // Re-organize immediately
     console.log('Updating todo:', todo);
-    const todoToUpdate = { ...todo, status: newStatus }; // todo can contain user and project objects from backend GET response
-    // Exclude isDraggable if it's only a UI property and not part of your backend Todo model
+    const todoToUpdate = { ...todo, status: newStatus }; 
     const { isDraggable, ...todoDataForBackend } = todoToUpdate;
-    
-    // Ensure userId and projectId are present for TodoPayload
+
     if (todo.userId === undefined || todo.projectId === undefined) {
-      console.error('Cannot update todo status: User ID or Project ID is missing.');
+      console.error(
+        'Cannot update todo status: User ID or Project ID is missing.'
+      );
       this.closeQuickStatusPopover();
       return;
     }
 
-    // Exclude 'user' and 'project' objects from the payload as the backend DTO (TodoRequest) does not expect them.
-    const { id, user, project, ...cleanedTodoData } = todoDataForBackend; // Exclude 'id' field
-    const updatePayload: TodoPayload = { // Explicitly type as TodoPayload
-      ...cleanedTodoData, // Spreads all properties from Todo, excluding user and project objects
-      userId: todo.userId,    // Explicitly ensure userId is a number
-      projectId: todo.projectId // Explicitly ensure projectId is a number
+    const { id, user, project, ...cleanedTodoData } = todoDataForBackend; 
+    const updatePayload: TodoPayload = {
+      ...cleanedTodoData, 
+      userId: todo.userId, 
+      projectId: todo.projectId, 
     };
-    
+
     this.todoService.updateTodo(todo.id, updatePayload).subscribe({
       next: () => {
         console.log('Todo status updated successfully via quick change');
-        // Find the todo in the main list and update its status
         const indexInAllTodos = this.todos.findIndex((t) => t.id === todo.id);
         if (indexInAllTodos !== -1) {
           this.todos[indexInAllTodos].status = newStatus;
         }
-        this.organizeTodos(); // Re-organize into status columns
+        this.organizeTodos(); 
         this.closeQuickStatusPopover();
       },
       error: (err) => {
         console.error('Failed to update todo status via quick change:', err);
-        // Revert optimistic update on error
         const indexInAllTodos = this.todos.findIndex((t) => t.id === todo.id);
         if (indexInAllTodos !== -1) {
-          this.todos[indexInAllTodos].status = originalStatus; // Revert
+          this.todos[indexInAllTodos].status = originalStatus; 
         }
         this.organizeTodos();
         alert(`Failed to update status: ${err.message || 'Server error'}`);
@@ -256,17 +244,16 @@ export class TodolistComponent implements OnInit, OnDestroy {
   closeQuickStatusPopover(): void {
     this.quickStatusPopover.visible = false;
     this.quickStatusPopover.todoId = null;
-    this.cancelHideQuickStatusPopoverTimer(); // Ensure timer is cleared
+    this.cancelHideQuickStatusPopoverTimer(); 
   }
 
   startHideQuickStatusPopoverTimer(todoIdToHide: number): void {
-    this.cancelHideQuickStatusPopoverTimer(); // Clear any existing timer
+    this.cancelHideQuickStatusPopoverTimer(); 
     this.quickStatusPopoverHideTimer = setTimeout(() => {
-      // Only hide if the popover for *this* item is still the one supposed to be visible
       if (this.quickStatusPopover.todoId === todoIdToHide) {
         this.closeQuickStatusPopover();
       }
-    }, 300); // 300ms delay to allow moving mouse into popover
+    }, 300);
   }
 
   cancelHideQuickStatusPopoverTimer(): void {
@@ -322,7 +309,6 @@ export class TodolistComponent implements OnInit, OnDestroy {
     return Array.from(new Map(todos.map((todo) => [todo.id, todo])).values());
   }
 
-//---------------------------------------------------------------------------
   loadProjects(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -337,7 +323,6 @@ export class TodolistComponent implements OnInit, OnDestroy {
       },
     });
   }
-//----------------------------------------------------------------------------
 
   loadSubtasks(): void {
     this.isLoading = true;
@@ -384,8 +369,8 @@ export class TodolistComponent implements OnInit, OnDestroy {
 
     const todoPayload: TodoPayload = {
       ...this.newTodo,
-      userId: currentUser.id, // Send userId directly
-      projectId: this.selectedProjectIdForNewTodo, // Send projectId directly
+      userId: currentUser.id, 
+      projectId: this.selectedProjectIdForNewTodo, 
     };
 
     this.todoService.addTodo(todoPayload).subscribe({
@@ -412,7 +397,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
         if (this.pendingSubtasksForNewTodo.length > 0 && addedTodo.id) {
           this.savePendingSubtasks(addedTodo.id);
         } else {
-          this.pendingSubtasksForNewTodo = []; // Clear if no subtasks or no ID
+          this.pendingSubtasksForNewTodo = []; 
         }
         addModalCloseButton?.click();
       },
@@ -424,7 +409,6 @@ export class TodolistComponent implements OnInit, OnDestroy {
     });
   }
 
-  // newTask: string = '';
   newTaskForAddModal: string = '';
   newTaskForEditModal: string = '';
   subtasks: Subtasks[] = [];
@@ -450,10 +434,9 @@ export class TodolistComponent implements OnInit, OnDestroy {
       } else {
         console.warn('Subtask for new Todo is empty!');
       }
-      return; // Do not proceed to save to backend yet for 'add' context
+      return; 
     }
 
-    // Logic for 'edit' context (parentTodoId should be present)
     if (!parentTodoId && context === 'edit') {
       console.error(
         'Cannot add subtask to existing Todo: Parent Todo ID is missing.'
@@ -471,7 +454,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       this.subtasksService.addSubtask(newSubtask).subscribe({
         next: (response) => {
           console.log('Task saved:', response);
-          this.subtasks.push(response); // Consider refreshing subtasks for the specific todo
+          this.subtasks.push(response); 
           if (context === 'edit') {
             this.newTaskForEditModal = '';
           }
@@ -498,7 +481,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     forkJoin(subtaskObservables).subscribe({
       next: (savedSubtasks) => {
         console.log('All pending subtasks saved:', savedSubtasks);
-        this.loadSubtasks(); // Or update local subtasks array more selectively
+        this.loadSubtasks(); 
         this.pendingSubtasksForNewTodo = [];
       },
       error: (err) =>
@@ -522,7 +505,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
   }
 
   openAddTodoModal(): void {
-    this.pendingSubtasksForNewTodo = []; // Clear pending subtasks when modal is opened
+    this.pendingSubtasksForNewTodo = []; 
     this.newTaskForAddModal = '';
     this.selectedProjectIdForNewTodo = null;
     this.newTodo = {
@@ -575,14 +558,15 @@ export class TodolistComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Add a guard clause to ensure userId and projectId are present
-    if (this.editTodoData.userId === undefined || this.editTodoData.projectId === undefined) {
+    if (
+      this.editTodoData.userId === undefined ||
+      this.editTodoData.projectId === undefined
+    ) {
       alert('Cannot update todo without user or project information.');
       return;
     }
 
-    // Construct the payload explicitly to match the TodoPayload interface
-    const updatePayload: TodoPayload = { // Explicitly type as TodoPayload
+    const updatePayload: TodoPayload = {
       title: this.editTodoData.title,
       description: this.editTodoData.description,
       status: this.editTodoData.status,
@@ -592,13 +576,12 @@ export class TodolistComponent implements OnInit, OnDestroy {
       dueDate: this.editTodoData.dueDate,
       priority: this.editTodoData.priority,
       order: this.editTodoData.order,
-      userId: this.editTodoData.userId, // Now guaranteed to be a number
-      projectId: this.editTodoData.projectId, // Now guaranteed to be a number
+      userId: this.editTodoData.userId, 
+      projectId: this.editTodoData.projectId, 
     };
 
     this.todoService.updateTodo(this.editTodoData.id, updatePayload).subscribe({
       next: () => {
-        // updatedTodo parameter removed as it's not used
         alert('Todo item updated successfully!');
         if (editTodoForm) {
           editTodoForm.resetForm();
@@ -621,9 +604,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
     if (!id) return;
     if (confirm('Are you sure you want to delete this todo?')) {
       this.todoService.deleteTodo(id).subscribe({
-        // The service now returns Observable<{ message: string }>
         next: (response) => {
-          // response is { message: "..." }
           alert(response.message || 'Todo deleted successfully!');
           this.loadTodos();
         },
@@ -681,7 +662,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
           console.log(
             'Todo moved, and orders for both lists updated successfully.'
           );
-          this.organizeTodos(); // Re-organize after successful drop
+          this.organizeTodos(); 
         },
         error: (err) => {
           console.error('Failed to update todo or list orders:', err);
@@ -696,9 +677,11 @@ export class TodolistComponent implements OnInit, OnDestroy {
     const updateObservables: Observable<Todo>[] = [];
 
     list.forEach((todo: DraggableTodo, index: number) => {
-      // Ensure todo.id, userId, and projectId are defined before proceeding
-      if (todo.id !== undefined && todo.userId !== undefined && todo.projectId !== undefined) {
-        // Explicitly construct TodoPayload to satisfy type requirements
+      if (
+        todo.id !== undefined &&
+        todo.userId !== undefined &&
+        todo.projectId !== undefined
+      ) {
         const updatedTodoPayload: TodoPayload = {
           title: todo.title,
           description: todo.description,
@@ -708,9 +691,9 @@ export class TodolistComponent implements OnInit, OnDestroy {
           dateEnd: todo.dateEnd,
           dueDate: todo.dueDate,
           priority: todo.priority,
-          order: index, // The new order
-          userId: todo.userId, // Guaranteed to be number here
-          projectId: todo.projectId, // Guaranteed to be number here
+          order: index,
+          userId: todo.userId, 
+          projectId: todo.projectId, 
         };
 
         if (todo.order !== index) {
@@ -747,17 +730,14 @@ export class TodolistComponent implements OnInit, OnDestroy {
       CANCELLED: [],
     };
 
-    // Ensure all connectedLists statuses are initialized in newTodosByStatus
     for (const statusKey of this.connectedLists) {
       if (!newTodosByStatus[statusKey]) {
-        // This check might be redundant if all are pre-initialized
         newTodosByStatus[statusKey] = [];
       }
     }
 
     for (const todo of this.todos) {
       if (newTodosByStatus[todo.status]) {
-        // Check if todo.status is a valid key
         newTodosByStatus[todo.status].push(todo);
       } else {
         console.warn(
@@ -846,7 +826,7 @@ export class TodolistComponent implements OnInit, OnDestroy {
       case 'PENDING':
         return 'bg-warning text-dark';
       case 'IN_PROGRESS':
-        return 'bg-info text-dark'; // Changed text to dark for better contrast on info
+        return 'bg-info text-dark'; 
       case 'COMPLETED':
         return 'bg-success text-white';
       case 'CANCELLED':
@@ -873,8 +853,9 @@ export class TodolistComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Helper method to map priority for display and class application
-  getMappedPriority(priority: string): 'LOW' | 'NORMAL' | 'IMPORTANT' | 'CRITICAL' {
+  getMappedPriority(
+    priority: string
+  ): 'LOW' | 'NORMAL' | 'IMPORTANT' | 'CRITICAL' {
     if (priority === 'HIGH') {
       return 'CRITICAL';
     }
@@ -925,26 +906,26 @@ export class TodolistComponent implements OnInit, OnDestroy {
   getStatusAccentColor(status: TodoStatus): string {
     switch (status) {
       case 'PENDING':
-        return '#ffc107'; 
+        return '#ffc107';
       case 'IN_PROGRESS':
-        return '#0dcaf0'; 
+        return '#0dcaf0';
       case 'COMPLETED':
-        return '#198754'; 
+        return '#198754';
       case 'CANCELLED':
         return '#6c757d';
       default:
-        return '#6c757d'; 
+        return '#6c757d';
     }
   }
 
   getStatusContrastColorForAccent(status: TodoStatus): string {
     switch (status) {
-      case 'PENDING': 
+      case 'PENDING':
       case 'IN_PROGRESS':
-        return '#000'; 
-      case 'COMPLETED': 
-      case 'CANCELLED': 
-        return '#fff'; 
+        return '#000';
+      case 'COMPLETED':
+      case 'CANCELLED':
+        return '#fff';
       default:
         return '#fff';
     }
